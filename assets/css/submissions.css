@@ -1,0 +1,817 @@
+/*
+ * =============================================================================
+ * THE ZENITH VIEW — /assets/css/submissions.css
+ * Student Submission Ledger Stylesheet
+ *
+ * DESIGN PRINCIPLES:
+ *   - Zero hardcoded colors. Every color value uses CSS variables from style.css.
+ *   - Semantic status colors (green/amber/red) are the sole exception — they
+ *     represent universal UI conventions, not brand colors.
+ *   - Card-per-row architecture, mirroring leaderboard.css.
+ *   - Desktop: single flex row with five distinct data zones.
+ *   - Mobile (<768px): two-row stack — [icon+title] / [date+badge+pts].
+ *   - Status strip: horizontally scrollable pills, no visible scrollbar.
+ *
+ * TABLE OF CONTENTS
+ *   01. Wrapper
+ *   02. Page Header & Breadcrumb
+ *   03. Status Strip (Filter Pills)
+ *   04. Ledger Container
+ *   05. Ledger Card — Base State
+ *   06. Ledger Card — Hover State
+ *   07. Ledger Card — Status Border Variants
+ *   08. Category Icon Circle
+ *   09. Card Body Columns (Details / Date / Badge / Points)
+ *   10. Mobile Footer Bar
+ *   11. Rejection Explainer Panel
+ *   12. Empty & No-Results States
+ *   13. Shared: Status Badges (mirrors dashboard.css exactly)
+ *   14. Shared: Upload Hero Button (mirrors dashboard.css exactly)
+ *   15. Dark Mode Overrides
+ *   16. Accessibility & Print
+ * =============================================================================
+ */
+
+
+/* =============================================================================
+   01. WRAPPER
+   Max-width and padding mirror lb-wrapper / dashboard-wrapper for consistency.
+   Standard bottom clearance — no sticky bar on this page.
+============================================================================= */
+
+.sl-wrapper {
+    max-width:  1080px;
+    margin:     0 auto;
+    padding:    1.5rem 1rem 4rem;
+}
+
+@media (min-width: 768px)  { .sl-wrapper { padding: 2rem 1.5rem 4rem; } }
+@media (min-width: 1200px) { .sl-wrapper { padding: 2.5rem 2rem 5rem; } }
+
+
+/* =============================================================================
+   02. PAGE HEADER & BREADCRUMB
+   Breadcrumb: shared .guide-breadcrumb pattern (matches leaderboard.php).
+   Header body: text left, upload CTA right — wraps on mobile.
+============================================================================= */
+
+/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+
+.guide-breadcrumb {
+    display:       flex;
+    align-items:   center;
+    gap:           0.5rem;
+    font-size:     0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.guide-breadcrumb__link {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             0.35rem;
+    color:           var(--text-secondary);
+    text-decoration: none;
+    font-weight:     500;
+    transition:      color 0.15s ease;
+}
+
+.guide-breadcrumb__link:hover  { color: var(--accent-primary); text-decoration: none; }
+.guide-breadcrumb__link i      { font-size: 0.8rem; }
+.guide-breadcrumb__sep         { color: var(--border-color); }
+.guide-breadcrumb__current     { color: var(--accent-primary); font-weight: 600; }
+
+/* ── Header shell ───────────────────────────────────────────────────────── */
+
+.sl-header {
+    margin-bottom: 1.75rem;
+}
+
+.sl-header__body {
+    display:         flex;
+    align-items:     flex-start;
+    justify-content: space-between;
+    gap:             1.5rem;
+    flex-wrap:       wrap;
+}
+
+/* Eyebrow — accent-primary uppercase label above the h1 */
+.sl-header__eyebrow {
+    display:        block;
+    font-size:      0.68rem;
+    font-weight:    600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color:          var(--accent-primary);
+    margin-bottom:  0.35rem;
+}
+
+.sl-header__title {
+    font-size:      clamp(1.5rem, 3.5vw, 2rem);
+    font-weight:    800;
+    color:          var(--text-primary);
+    margin:         0 0 0.4rem;
+    letter-spacing: -0.025em;
+    line-height:    1.2;
+}
+
+.sl-header__sub {
+    font-size:   0.9rem;
+    color:       var(--text-secondary);
+    line-height: 1.7;
+    max-width:   520px;
+    margin:      0;
+}
+
+.sl-header__action {
+    flex-shrink: 0;
+}
+
+/* ── Upload Hero Button — mirrors dashboard.css exactly ─────────────────── */
+
+.btn-upload-hero {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.5rem;
+    padding:          0.6rem 1.25rem;
+    background-color: var(--accent-primary);
+    color:            #ffffff;
+    border:           1.5px solid var(--accent-primary);
+    font-size:        0.875rem;
+    font-weight:      600;
+    border-radius:    8px;
+    text-decoration:  none;
+    white-space:      nowrap;
+    transition:       background-color 0.2s ease, border-color 0.2s ease,
+                      transform 0.15s ease, box-shadow 0.2s ease;
+    min-height:       44px;
+}
+
+.btn-upload-hero:hover,
+.btn-upload-hero:focus-visible {
+    background-color: var(--accent-primary-hover);
+    border-color:     var(--accent-primary-hover);
+    color:            #ffffff;
+    transform:        translateY(-1px);
+    box-shadow:       0 4px 12px rgba(0, 0, 0, 0.18);
+    text-decoration:  none;
+}
+
+.btn-upload-hero:active {
+    transform:  translateY(0);
+    box-shadow: none;
+}
+
+/* Hide CTA text on very small screens — icon alone is clear enough */
+@media (max-width: 479px) {
+    .btn-upload-hero span { display: none; }
+    .btn-upload-hero      { padding: 0.6rem 0.9rem; }
+}
+
+
+/* =============================================================================
+   03. STATUS STRIP — Filter Pills
+   Horizontally scrollable pill row. No visible scrollbar on any OS.
+   Active pill fills with the matching semantic color.
+   Inactive pills are neutral chips that highlight on hover.
+============================================================================= */
+
+.sl-strip {
+    display:          flex;
+    align-items:      center;
+    gap:              0.5rem;
+    overflow-x:       auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width:  none;
+    padding-bottom:   3px;   /* prevent clipped focus rings */
+    margin-bottom:    1.5rem;
+}
+
+.sl-strip::-webkit-scrollbar { display: none; }
+
+/* ── Base pill ──────────────────────────────────────────────────────────── */
+
+.sl-pill {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.4rem;
+    flex-shrink:      0;
+    height:           36px;
+    padding:          0 0.9rem;
+    font-family:      var(--font-family, inherit);
+    font-size:        0.82rem;
+    font-weight:      600;
+    color:            var(--text-secondary);
+    background-color: var(--bg-subtle);
+    border:           1px solid var(--border-color);
+    border-radius:    20px;
+    cursor:           pointer;
+    white-space:      nowrap;
+    transition:
+        background-color 0.18s ease,
+        border-color     0.18s ease,
+        color            0.18s ease,
+        box-shadow       0.18s ease;
+    /* Reset browser button styles */
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.sl-pill:hover {
+    background-color: var(--bg-card);
+    border-color:     color-mix(in srgb, var(--accent-primary) 35%, transparent);
+    color:            var(--text-primary);
+}
+
+.sl-pill i { font-size: 0.72rem; }
+
+.sl-pill__count {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    min-width:        1.4rem;
+    height:           1.4rem;
+    padding:          0 0.35rem;
+    font-size:        0.68rem;
+    font-weight:      700;
+    border-radius:    10px;
+    background-color: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+    color:            var(--text-secondary);
+    transition:       background-color 0.18s ease, color 0.18s ease;
+}
+
+/* ── Active "All" pill — accent-secondary (trust blue) ──────────────────── */
+
+.sl-pill--active {
+    background-color: var(--accent-secondary);
+    border-color:     var(--accent-secondary);
+    color:            #ffffff;
+}
+
+.sl-pill--active .sl-pill__count {
+    background-color: rgba(255, 255, 255, 0.22);
+    color:            #ffffff;
+}
+
+.sl-pill--active:hover {
+    background-color: var(--accent-secondary-hover);
+    border-color:     var(--accent-secondary-hover);
+    color:            #ffffff;
+}
+
+/* ── Approved pill active state — semantic green ────────────────────────── */
+
+.sl-pill--approved.sl-pill--active {
+    background-color: #198754;
+    border-color:     #198754;
+    color:            #ffffff;
+}
+
+.sl-pill--approved.sl-pill--active:hover {
+    background-color: #146c43;
+    border-color:     #146c43;
+}
+
+.sl-pill--approved.sl-pill--active .sl-pill__count {
+    background-color: rgba(255, 255, 255, 0.22);
+    color:            #ffffff;
+}
+
+/* ── Pending pill active state — semantic amber ─────────────────────────── */
+
+.sl-pill--pending.sl-pill--active {
+    background-color: #a07000;
+    border-color:     #a07000;
+    color:            #ffffff;
+}
+
+.sl-pill--pending.sl-pill--active:hover {
+    background-color: #805800;
+    border-color:     #805800;
+}
+
+.sl-pill--pending.sl-pill--active .sl-pill__count {
+    background-color: rgba(255, 255, 255, 0.22);
+    color:            #ffffff;
+}
+
+/* ── Rejected pill active state — semantic red ──────────────────────────── */
+
+.sl-pill--rejected.sl-pill--active {
+    background-color: #dc3545;
+    border-color:     #dc3545;
+    color:            #ffffff;
+}
+
+.sl-pill--rejected.sl-pill--active:hover {
+    background-color: #b02a37;
+    border-color:     #b02a37;
+}
+
+.sl-pill--rejected.sl-pill--active .sl-pill__count {
+    background-color: rgba(255, 255, 255, 0.22);
+    color:            #ffffff;
+}
+
+
+/* =============================================================================
+   04. LEDGER CONTAINER
+   Simple block container — no extra shell card around the list.
+   The individual .ledger-card items are the visual units.
+============================================================================= */
+
+.ledger {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.75rem;
+}
+
+
+/* =============================================================================
+   05. LEDGER CARD — BASE STATE
+   Single card = single submission. Flat at rest.
+   Desktop: one-line flex row across five zones.
+   Mobile: two-row stack (handled in §10).
+============================================================================= */
+
+.ledger-card {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    12px;
+    padding:          1.25rem;
+    transition:
+        transform    0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow   0.22s ease,
+        border-color 0.18s ease;
+    will-change: transform;
+}
+
+/* Light mode shadow */
+[data-theme="light"] .ledger-card,
+:root .ledger-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .ledger-card { box-shadow: none; }
+
+
+/* =============================================================================
+   06. LEDGER CARD — HOVER STATE
+   Spring-curve lift + elevated shadow + accent border.
+   Mirrors the leaderboard ranking-card hover exactly.
+============================================================================= */
+
+.ledger-card:hover {
+    transform:    translateY(-2px);
+    box-shadow:   0 8px 28px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-color: color-mix(in srgb, var(--accent-secondary) 55%, transparent);
+}
+
+[data-theme="dark"] .ledger-card:hover {
+    box-shadow:   0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: color-mix(in srgb, var(--accent-secondary) 75%, transparent);
+}
+
+
+/* =============================================================================
+   07. LEDGER CARD — STATUS LEFT BORDER VARIANTS
+   3px solid accent matching the semantic color — same pattern as dashboard rows.
+============================================================================= */
+
+.ledger-card--approved { border-left: 3px solid #198754; }
+.ledger-card--pending  { border-left: 3px solid #f0a500; }
+.ledger-card--rejected { border-left: 3px solid #dc3545; }
+
+
+/* =============================================================================
+   08. CATEGORY ICON CIRCLE
+   40×40 circle with a category-specific tinted background.
+   Each modifier sets its own bg/color pair using design-system variables.
+============================================================================= */
+
+.lc-icon {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+    width:           40px;
+    height:          40px;
+    border-radius:   50%;
+    font-size:       1rem;
+    /* Default (fallback) */
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 20%, transparent);
+}
+
+.lc-icon.icon--tech {
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border-color:     color-mix(in srgb, var(--accent-secondary) 22%, transparent);
+}
+
+.lc-icon.icon--research {
+    background-color: color-mix(in srgb, #6f42c1 10%, var(--bg-card));
+    color:            #6f42c1;
+    border-color:     color-mix(in srgb, #6f42c1 22%, transparent);
+}
+
+.lc-icon.icon--extra {
+    background-color: color-mix(in srgb, #f0a500 10%, var(--bg-card));
+    color:            #a07000;
+    border-color:     color-mix(in srgb, #f0a500 22%, transparent);
+}
+
+.lc-icon.icon--leadership {
+    background-color: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
+    color:            var(--accent-primary);
+    border-color:     color-mix(in srgb, var(--accent-primary) 22%, transparent);
+}
+
+.lc-icon.icon--academic {
+    background-color: color-mix(in srgb, #198754 10%, var(--bg-card));
+    color:            #198754;
+    border-color:     color-mix(in srgb, #198754 22%, transparent);
+}
+
+.lc-icon.icon--default {
+    background-color: color-mix(in srgb, var(--text-secondary) 8%, var(--bg-card));
+    color:            var(--text-secondary);
+    border-color:     var(--border-color);
+}
+
+
+/* =============================================================================
+   09. CARD BODY COLUMNS — Desktop layout
+   .ledger-card__body is a flex row on ≥768px.
+   Column widths are set via flex properties so the layout is self-organising:
+     lc-icon     → fixed 40px (handled by the icon itself)
+     lc-details  → flex:1 — grows to fill available space
+     lc-date     → fixed width, right of details
+     status-badge→ fixed/shrink
+     lc-pts      → fixed, right-aligned
+============================================================================= */
+
+.ledger-card__body {
+    display:     flex;
+    align-items: center;
+    gap:         1rem;
+}
+
+/* ── Details: title + meta ──────────────────────────────────────────────── */
+
+.lc-details {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.2rem;
+    flex:           1;
+    min-width:      0; /* enables text-overflow: ellipsis */
+}
+
+.lc-title {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         var(--text-primary);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    line-height:   1.3;
+}
+
+.lc-meta {
+    font-size:   0.75rem;
+    color:       var(--text-secondary);
+    display:     flex;
+    align-items: center;
+    gap:         0.3rem;
+    white-space: nowrap;
+    overflow:    hidden;
+    text-overflow: ellipsis;
+}
+
+.lc-meta__sep {
+    color: var(--border-color);
+}
+
+/* ── Date column ────────────────────────────────────────────────────────── */
+
+.lc-date {
+    display:     flex;
+    align-items: center;
+    gap:         0.35rem;
+    font-size:   0.8rem;
+    color:       var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.lc-date i { font-size: 0.72rem; }
+
+/* ── Points ─────────────────────────────────────────────────────────────── */
+
+.lc-pts {
+    font-size:   0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width:   4rem;
+    text-align:  right;
+    display:     flex;
+    align-items: baseline;
+    gap:         0.2rem;
+    justify-content: flex-end;
+}
+
+.lc-pts__label {
+    font-size:   0.68rem;
+    font-weight: 500;
+    opacity:     0.65;
+}
+
+.lc-pts--approved { color: #198754; }
+.lc-pts--pending  { color: var(--text-secondary); font-size: 1.1rem; }
+.lc-pts--rejected { color: var(--text-secondary); }
+
+
+/* =============================================================================
+   10. MOBILE LAYOUT (<768px)
+   On small screens the ledger-card becomes a column stack:
+     Row 1: [icon] [title+meta]       — always at top
+     Row 2: hidden (desktop columns)
+     Row 3: .ledger-card__mobile-footer [date | badge | pts]
+
+   The desktop .lc-date is hidden; its twin inside __mobile-footer is shown.
+============================================================================= */
+
+/* Desktop: hide the mobile-footer entirely */
+.ledger-card__mobile-footer {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    /* Switch card to column layout */
+    .ledger-card__body {
+        flex-wrap:   wrap;
+        align-items: flex-start;
+        gap:         0.75rem;
+    }
+
+    /* Title+meta fill the row beside the icon */
+    .lc-details { flex: 1; }
+
+    /* Hide the desktop-only columns — they reappear in the mobile footer */
+    .lc-date,
+    .ledger-card__body > .status-badge,
+    .ledger-card__body > .lc-pts {
+        display: none;
+    }
+
+    /* Show the mobile footer bar */
+    .ledger-card__mobile-footer {
+        display:      flex;
+        align-items:  center;
+        gap:          0.6rem;
+        flex-wrap:    wrap;
+        padding-top:  0.75rem;
+        border-top:   1px solid var(--border-color);
+        margin-top:   0.25rem;
+    }
+
+    /* Date inside footer — slightly smaller */
+    .lc-date--mobile {
+        display:   flex;
+        font-size: 0.75rem;
+        color:     var(--text-secondary);
+        gap:       0.3rem;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    /* Points pushed to the far right inside footer */
+    .ledger-card__mobile-footer .lc-pts {
+        margin-left: auto;
+    }
+
+    /* Rejection panel stays full-width — no adjustment needed */
+}
+
+
+/* =============================================================================
+   11. REJECTION EXPLAINER PANEL
+   Only rendered for status='rejected' with a non-empty rejection_reason.
+   Dashed top border + red icon + reason text — clearly branded as an error state
+   without being alarming. The student should understand, not feel punished.
+============================================================================= */
+
+.ledger-card__rejection {
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.6rem;
+    border-top:  1px dashed var(--border-color);
+    margin-top:  1rem;
+    padding-top: 0.75rem;
+}
+
+.lc-rejection__icon {
+    color:       #dc3545;
+    font-size:   0.9rem;
+    flex-shrink: 0;
+    margin-top:  0.1rem; /* optically align with first line of text */
+}
+
+.lc-rejection__text {
+    font-size:   0.82rem;
+    color:       var(--text-secondary);
+    line-height: 1.55;
+    margin:      0;
+    font-style:  italic;
+}
+
+[data-theme="dark"] .lc-rejection__icon { color: #f07070; }
+[data-theme="dark"] .lc-rejection__text { color: var(--text-secondary); }
+
+
+/* =============================================================================
+   12. EMPTY & NO-RESULTS STATES
+============================================================================= */
+
+/* Full-page empty state — student has zero submissions */
+.sl-empty {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    text-align:     center;
+    padding:        4rem 2rem 5rem;
+    gap:            0.65rem;
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    12px;
+}
+
+[data-theme="light"] .sl-empty,
+:root .sl-empty {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sl-empty__icon {
+    font-size:     2.8rem;
+    color:         var(--border-color);
+    margin-bottom: 0.25rem;
+    animation:     sl-pulse 3s ease-in-out infinite;
+}
+
+@keyframes sl-pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1);    }
+    50%       { opacity: 0.8; transform: scale(1.05); }
+}
+
+.sl-empty__title {
+    font-size:   1.05rem;
+    font-weight: 700;
+    color:       var(--text-primary);
+    margin:      0;
+}
+
+.sl-empty__body {
+    font-size:  0.875rem;
+    color:      var(--text-secondary);
+    max-width:  400px;
+    line-height:1.6;
+    margin:     0;
+}
+
+/* JS-driven "no results" — shown when filter pill yields zero visible cards */
+.sl-no-results {
+    display:     flex;
+    align-items: center;
+    gap:         0.5rem;
+    padding:     1.5rem 1.25rem;
+    font-size:   0.875rem;
+    color:       var(--text-secondary);
+    background-color: var(--bg-card);
+    border:      1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.sl-no-results i { color: var(--text-muted, #8C9097); }
+
+
+/* =============================================================================
+   13. SHARED: STATUS BADGES
+   Exact copies of dashboard.css §7 — keeping them in sync visually.
+   These are duplicated deliberately so submissions.css is self-contained.
+============================================================================= */
+
+.status-badge {
+    display:      inline-flex;
+    align-items:  center;
+    gap:          0.3rem;
+    font-size:    0.72rem;
+    font-weight:  600;
+    padding:      0.28rem 0.65rem;
+    border-radius:20px;
+    white-space:  nowrap;
+    flex-shrink:  0;
+}
+
+.badge--approved {
+    background-color: rgba(25, 135, 84, 0.12);
+    color:            #198754;
+    border:           1px solid rgba(25, 135, 84, 0.25);
+}
+
+[data-theme="dark"] .badge--approved {
+    background-color: rgba(25, 135, 84, 0.18);
+    color:            #4caf82;
+}
+
+.badge--pending {
+    background-color: rgba(240, 165, 0, 0.12);
+    color:            #a07000;
+    border:           1px solid rgba(240, 165, 0, 0.25);
+}
+
+[data-theme="dark"] .badge--pending {
+    background-color: rgba(240, 165, 0, 0.15);
+    color:            #f0c040;
+}
+
+.badge--rejected {
+    background-color: rgba(220, 53, 69, 0.1);
+    color:            #dc3545;
+    border:           1px solid rgba(220, 53, 69, 0.22);
+}
+
+[data-theme="dark"] .badge--rejected {
+    background-color: rgba(220, 53, 69, 0.15);
+    color:            #f07070;
+}
+
+
+/* =============================================================================
+   14. DARK MODE OVERRIDES
+   Variable inheritance handles most of dark mode automatically.
+   These rules handle edge cases requiring an explicit nudge.
+============================================================================= */
+
+[data-theme="dark"] .ledger-card {
+    box-shadow: none;
+}
+
+[data-theme="dark"] .sl-empty {
+    box-shadow: none;
+}
+
+[data-theme="dark"] .sl-no-results {
+    box-shadow: none;
+}
+
+/* Icon circles: slightly brighter tint in dark mode so they don't disappear */
+[data-theme="dark"] .lc-icon.icon--research {
+    background-color: color-mix(in srgb, #9d6ecc 12%, var(--bg-card));
+    color:            #9d6ecc;
+    border-color:     color-mix(in srgb, #9d6ecc 25%, transparent);
+}
+
+[data-theme="dark"] .lc-icon.icon--extra {
+    color: #f0c040;
+    background-color: color-mix(in srgb, #f0c040 10%, var(--bg-card));
+    border-color:     color-mix(in srgb, #f0c040 20%, transparent);
+}
+
+
+/* =============================================================================
+   15. ACCESSIBILITY & PRINT
+============================================================================= */
+
+a:focus-visible,
+button:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius:  4px;
+}
+
+/* Strip browser default focus ring on pills — our custom ring replaces it */
+.sl-pill:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+@media print {
+    .sl-header__action,
+    .sl-strip,
+    .ledger-card__mobile-footer {
+        display: none !important;
+    }
+
+    .sl-wrapper { padding-bottom: 2rem; }
+
+    .ledger-card {
+        border-radius: 0 !important;
+        box-shadow:    none !important;
+        transform:     none !important;
+        page-break-inside: avoid;
+    }
+
+    /* Ensure rejection reason always prints */
+    .ledger-card__rejection { display: flex !important; }
+}

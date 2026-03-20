@@ -1,0 +1,166 @@
+/* =============================================================================
+   FLEXBOX TICKET AD CSS (Pixel-perfect framing)
+============================================================================= */
+.section-promo {
+    padding: 4rem 0 0 0; 
+}
+
+/* The Main Ticket Wrapper */
+.promo-ticket {
+    display: flex;
+    flex-direction: row;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+[data-theme="dark"] .promo-ticket {
+    box-shadow: none;
+}
+
+/* --- IMAGE SIDE --- */
+.promo-ticket-img-box {
+    width: 32%; /* Takes up exactly 32% of the card width */
+    background-color: #0f172a;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.promo-ticket-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%; /* Keeps focus on the 'AFTERMATH' title */
+}
+
+/* --- CONTENT SIDE --- */
+.promo-ticket-content {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.promo-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.promo-badge-slim {
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    color: var(--accent-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+}
+
+.promo-title {
+    font-size: 1.45rem; 
+    font-weight: 800;
+    color: var(--text-heading);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.promo-tagline {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+}
+
+/* Info List */
+.promo-meta {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.promo-meta i {
+    color: var(--accent-secondary);
+    margin-right: 5px;
+}
+
+[data-theme="dark"] .promo-meta i {
+    color: var(--text-muted);
+}
+
+/* Button & Urgency Bar */
+.promo-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.promo-urgent {
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+[data-theme="dark"] .promo-urgent {
+    color: #ff6b6b;
+}
+
+.btn-promo {
+    background: var(--accent-primary);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.7rem 1.6rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color var(--transition), transform 0.2s ease;
+}
+
+.btn-promo:hover {
+    background: var(--accent-primary-hover);
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 767.98px) {
+    .promo-ticket {
+        flex-direction: column; /* Stacks image on top of text */
+    }
+    .promo-ticket-img-box {
+        width: 100%;
+        height: 180px; /* Fixed height for mobile banner */
+    }
+    .promo-ticket-img {
+        position: relative; /* Overrides the absolute positioning on mobile */
+    }
+    .promo-ticket-content {
+        padding: 1.5rem;
+    }
+    .promo-meta {
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .btn-promo {
+        width: 100%;
+        justify-content: center;
+    }
+}

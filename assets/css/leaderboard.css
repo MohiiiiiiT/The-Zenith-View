@@ -1,0 +1,918 @@
+/*
+ * =============================================================================
+ * THE ZENITH VIEW — /assets/css/leaderboard.css
+ * Leaderboard Stylesheet — Premium Overhaul
+ *
+ * DESIGN PRINCIPLES:
+ *   - Zero hardcoded colours. All palette values from style.css CSS variables.
+ *   - Medal colours (#C9A227, #8FA0AD, #A0644A) are the ONLY explicit hex codes.
+ *     They represent physical materials — gold, silver, bronze — not brand colours.
+ *   - Card-per-row architecture: each student is a floating, interactive card.
+ *   - No breadcrumb. No column header row. Data is self-evident.
+ *   - Hover: translateY lift + elevated shadow + accent border (Apple Fitness feel).
+ *   - Top 3: metallic left border + glowing avatar ring only. No background tints.
+ *   - Sticky bar: full-width dock at viewport bottom — not a floating pill.
+ *   - Mobile (<768px): Flexbox stack — Avatar | Name+Meta | PtsPill. Native-app feel.
+ *
+ * TABLE OF CONTENTS
+ *   01. Wrapper
+ *   02. Page Header
+ *   03. Control Center (Search + Filter Pills)
+ *   04. Ranking List (Card Grid Container)
+ *   05. Ranking Card — Base State
+ *   06. Ranking Card — Hover State
+ *   07. Ranking Card — Medal Variants (Ranks 1–3)
+ *   08. Ranking Card — "Me" (Current User) Highlight
+ *   09. Avatar
+ *   10. Medal Icons
+ *   11. Points Pill
+ *   12. You Badge
+ *   13. Sticky Dock Bar ("Your Position")
+ *   14. Empty & No-Results States
+ *   15. Dark Mode Overrides
+ *   16. Accessibility & Print
+ * =============================================================================
+ */
+
+
+/* =============================================================================
+   01. WRAPPER
+   Max-width matches the rest of the student portal. Bottom padding gives the
+   last ranking card comfortable clearance above the footer.
+============================================================================= */
+
+.lb-wrapper {
+    max-width: 1080px;
+    margin:    0 auto;
+    padding:   1.5rem 1rem 4rem;
+}
+
+@media (min-width: 768px)  { .lb-wrapper { padding: 2rem 1.5rem 4rem; } }
+@media (min-width: 1200px) { .lb-wrapper { padding: 2.5rem 2rem 5rem; } }
+
+
+/* =============================================================================
+   02. PAGE HEADER
+   Title + subtitle on the left. Mini rank/points stat blocks on the right.
+   Wraps gracefully on mobile so stat blocks stack below the heading.
+============================================================================= */
+
+.lb-header {
+    margin-bottom: 1.75rem;
+}
+
+.lb-header__body {
+    display:         flex;
+    align-items:     flex-start;
+    justify-content: space-between;
+    gap:             1.5rem;
+    flex-wrap:       wrap;
+}
+
+/* Eyebrow — accent-primary uppercase label sitting above the main title */
+.lb-header__eyebrow {
+    display:        block;
+    font-size:      0.68rem;
+    font-weight:    600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color:          var(--accent-primary);
+    margin-bottom:  0.35rem;
+}
+
+.lb-header__title {
+    font-size:      clamp(1.5rem, 3.5vw, 2rem);
+    font-weight:    800;
+    color:          var(--text-primary);   /* was --text-heading; matches platform theme */
+    margin:         0 0 0.4rem;
+    letter-spacing: -0.025em;
+    line-height:    1.2;
+}
+
+.lb-header__sub {
+    font-size:   0.9rem;
+    color:       var(--text-secondary);
+    line-height: 1.7;
+    max-width:   520px;
+    margin:      0;
+}
+
+/* ── Stat blocks (Your Rank / Your Points) ──────────────────────────────── */
+
+.lb-header__stat {
+    display:    flex;
+    gap:        0.75rem;
+    flex-shrink:0;
+}
+
+.lb-stat-block {
+    display:          flex;
+    flex-direction:   column;
+    align-items:      flex-end;
+    background-color: color-mix(in srgb, var(--accent-secondary) 7%, var(--bg-card));
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 20%, transparent);
+    border-radius:    var(--border-radius-lg);
+    padding:          0.6rem 1.1rem;
+    min-width:        84px;
+}
+
+.lb-stat-block__label {
+    font-size:      0.64rem;
+    font-weight:    600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color:          var(--accent-secondary);
+    margin-bottom:  0.15rem;
+    white-space:    nowrap;
+}
+
+.lb-stat-block__value {
+    font-size:      1.3rem;
+    font-weight:    800;
+    color:          var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height:    1;
+}
+
+/* Hide stat blocks at very small widths — sticky dock covers it on phones */
+@media (max-width: 479px) { .lb-header__stat { display: none; } }
+
+
+/* =============================================================================
+   03. CONTROL CENTER — Search + Filter Pills
+   Search bar flexes to fill available width.
+   Filter pills row is independently horizontally scrollable with no scrollbar
+   visible — mimics native iOS horizontal scroll behaviour.
+============================================================================= */
+
+.lb-controls {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.75rem;
+    margin-bottom:  1.5rem;
+}
+
+@media (min-width: 640px) {
+    .lb-controls {
+        flex-direction: row;
+        align-items:    center;
+        gap:            1rem;
+    }
+}
+
+/* ── Search bar ─────────────────────────────────────────────────────────── */
+
+.lb-search-wrap {
+    position: relative;
+    flex:     1;
+    min-width:0;
+}
+
+.lb-search-wrap__icon {
+    position:       absolute;
+    left:           0.875rem;
+    top:            50%;
+    transform:      translateY(-50%);
+    font-size:      0.85rem;
+    color:          var(--text-secondary);
+    pointer-events: none;
+    z-index:        1;
+}
+
+.lb-search {
+    width:            100%;
+    height:           42px;
+    padding:          0 0.875rem 0 2.5rem;
+    font-family:      var(--font-family);
+    font-size:        0.875rem;
+    color:            var(--text-primary);
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    var(--border-radius-lg);
+    outline:          none;
+    transition:       border-color 0.18s ease, box-shadow 0.18s ease;
+    -webkit-appearance: none;
+}
+
+.lb-search::placeholder { color: var(--text-muted); }
+
+.lb-search:focus,
+.lb-search:focus-visible {
+    outline:      none !important;   /* kills the global input:focus-visible red ring */
+    border-color: var(--accent-primary);
+    box-shadow:   0 0 0 3px color-mix(in srgb, var(--accent-primary) 15%, transparent);
+}
+
+/* ── Filter pills row ───────────────────────────────────────────────────── */
+
+.lb-filters {
+    display:          flex;
+    align-items:      center;
+    gap:              0.5rem;
+    overflow-x:       auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width:  none;
+    padding-bottom:   2px; /* prevents clipped focus rings */
+    flex-shrink:      0;
+}
+
+.lb-filters::-webkit-scrollbar { display: none; }
+
+/* ── Filter pill wrapper — the interactive chip container ─────────────── */
+
+.filter-pill-wrap {
+    position:         relative;
+    display:          inline-flex;
+    align-items:      center;
+    flex-shrink:      0;
+    background-color: var(--bg-subtle);
+    border:           1px solid var(--border-color);
+    border-radius:    20px;
+    padding:          0 0.7rem 0 0.6rem;
+    height:           36px;
+    gap:              0.3rem;
+    cursor:           pointer;
+    transition:
+        background-color 0.18s ease,
+        border-color     0.18s ease,
+        box-shadow       0.18s ease;
+}
+
+.filter-pill-wrap:hover {
+    background-color: var(--bg-card);
+    border-color:     var(--border-color);
+}
+
+.filter-pill-wrap:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow:   0 0 0 3px color-mix(in srgb, var(--accent-primary) 13%, transparent);
+}
+
+.filter-pill-wrap__icon {
+    font-size:      0.72rem;
+    color:          var(--text-secondary);
+    flex-shrink:    0;
+    pointer-events: none;
+    transition:     color 0.18s ease;
+}
+
+.filter-pill-wrap__chevron {
+    font-size:      0.6rem;
+    color:          var(--text-secondary);
+    flex-shrink:    0;
+    pointer-events: none;
+    transition:     color 0.18s ease, transform 0.18s ease;
+}
+
+/* Open-state chevron spin — triggered by JS focus (optional enhancement) */
+.filter-pill-wrap:focus-within .filter-pill-wrap__chevron {
+    transform: rotate(180deg);
+}
+
+/* The native <select> — fully transparent so the OS never paints a white box */
+.filter-pill {
+    font-family:        var(--font-family);
+    font-size:          0.8rem;
+    font-weight:        500;
+    color:              var(--text-primary);
+    background-color:   transparent;   /* belt */
+    background:         transparent;   /* braces — overrides any UA stylesheet */
+    border:             none;
+    outline:            none;
+    cursor:             pointer;
+    padding:            0 0.1rem;
+    appearance:         none;
+    -webkit-appearance: none;
+    white-space:        nowrap;
+    min-width:          max-content;
+}
+
+/* Prevent the global select:focus-visible rule from adding its own red ring */
+.filter-pill:focus,
+.filter-pill:focus-visible {
+    outline: none !important;
+}
+
+/* ── Active filter state — pill fills with accent-secondary ────────────── */
+/*    Applied via PHP when a filter is currently set (server-side class toggle) */
+
+.filter-pill-wrap--active {
+    background-color: var(--accent-secondary);
+    border-color:     var(--accent-secondary);
+}
+
+.filter-pill-wrap--active:hover {
+    background-color: var(--accent-secondary-hover);
+    border-color:     var(--accent-secondary-hover);
+}
+
+.filter-pill-wrap--active .filter-pill-wrap__icon,
+.filter-pill-wrap--active .filter-pill-wrap__chevron {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.filter-pill-wrap--active .filter-pill {
+    color: #ffffff;
+}
+
+/* Ensure option text is readable in any OS dropdown panel */
+.filter-pill-wrap--active .filter-pill option {
+    color:            var(--text-primary);
+    background-color: var(--bg-card);
+}
+
+/* ── Clear filters link ─────────────────────────────────────────────────── */
+
+.filter-pill-clear {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.3rem;
+    flex-shrink:      0;
+    height:           36px;
+    padding:          0 0.9rem;
+    font-family:      var(--font-family);
+    font-size:        0.8rem;
+    font-weight:      500;
+    color:            var(--accent-primary);
+    background-color: color-mix(in srgb, var(--accent-primary) 8%, var(--bg-card));
+    border:           1px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+    border-radius:    20px;
+    text-decoration:  none;
+    white-space:      nowrap;
+    transition:
+        background-color 0.18s ease,
+        border-color     0.18s ease;
+}
+
+.filter-pill-clear:hover {
+    background-color: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-card));
+    border-color:     color-mix(in srgb, var(--accent-primary) 35%, transparent);
+    color:            var(--accent-primary);
+    text-decoration:  none;
+}
+
+.filter-pill-clear i { font-size: 0.65rem; }
+
+
+/* =============================================================================
+   04. RANKING LIST — Card Grid Container
+   A vertical flex column with gap between individual ranking cards.
+   No outer card shell — each row is its own elevated surface.
+============================================================================= */
+
+.ranking-list {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.5rem;
+}
+
+
+/* =============================================================================
+   05. RANKING CARD — Base State
+   The fundamental unit. A flat card at rest:
+   bg-card background, 1px border, 8px radius, subtle shadow.
+   Flexbox row: [Rank] [Identity: Avatar+Name+Meta] →→→ [PtsPill]
+============================================================================= */
+
+.ranking-card {
+    display:          flex;
+    align-items:      center;
+    gap:              0.875rem;
+    padding:          0.85rem 1.1rem;
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    var(--border-radius-lg);
+    box-shadow:       var(--card-shadow);
+    position:         relative;
+    /* Smooth transitions for hover lift, border change, shadow */
+    transition:
+        transform    0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow   0.22s ease,
+        border-color 0.18s ease;
+    /* Prevent sub-pixel rounding from jittering adjacent cards */
+    will-change:      transform;
+}
+
+/* ── Rank cell ──────────────────────────────────────────────────────────── */
+
+.ranking-card__rank {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+    width:           38px;
+}
+
+.rank-num {
+    font-size:   0.88rem;
+    font-weight: 700;
+    color:       var(--text-secondary);
+    min-width:   24px;
+    text-align:  center;
+    display:     block;
+}
+
+.rank-num--accent { color: var(--accent-secondary); }
+
+/* ── Identity block — fills the middle ─────────────────────────────────── */
+
+.ranking-card__identity {
+    display:     flex;
+    align-items: center;
+    gap:         0.75rem;
+    flex:        1;
+    min-width:   0; /* critical: allows text-overflow: ellipsis to fire */
+}
+
+.ranking-card__nameblock {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.18rem;
+    min-width:      0;
+}
+
+.ranking-card__name {
+    font-size:     0.9rem;
+    font-weight:   600;
+    color:         var(--text-primary);
+    line-height:   1.3;
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    display:       flex;
+    align-items:   center;
+    gap:           0.4rem;
+}
+
+/* Dept · Year meta — always visible on all breakpoints */
+.ranking-card__meta {
+    font-size:   0.75rem;
+    color:       var(--text-secondary);
+    line-height: 1;
+    display:     flex;
+    align-items: center;
+    gap:         0.3rem;
+    white-space: nowrap;
+    overflow:    hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Points cell — anchored to the far right ────────────────────────────── */
+
+.ranking-card__pts {
+    display:         flex;
+    align-items:     center;
+    justify-content: flex-end;
+    flex-shrink:     0;
+    margin-left:     auto; /* pushes pts to the right on mobile flex row */
+}
+
+
+/* =============================================================================
+   06. RANKING CARD — Hover State
+   Cards lift up (translateY), gain a stronger elevated shadow, and their border
+   transitions to accent-secondary — communicating "interactive" without being
+   flashy. Dark mode shadow is more pronounced since cards start shadowless.
+============================================================================= */
+
+.ranking-card:hover {
+    transform:    translateY(-2px);
+    box-shadow:   0 8px 28px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-color: color-mix(in srgb, var(--accent-secondary) 55%, transparent);
+    cursor:       default;
+}
+
+[data-theme="dark"] .ranking-card:hover {
+    box-shadow:   0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: color-mix(in srgb, var(--accent-secondary) 75%, transparent);
+}
+
+
+/* =============================================================================
+   07. RANKING CARD — MEDAL VARIANTS (Ranks 1, 2, 3)
+   Metallic left border ONLY — no muddy background tints.
+   The accent comes from: (a) the thick left border, (b) the avatar ring (§09).
+   On hover, the card still lifts exactly like a standard row.
+   Gold / Silver / Bronze hex values are intentional — physical material colours.
+============================================================================= */
+
+/* ── Gold: Rank 1 — Deep metallic gold ─────────────────────────────────── */
+.ranking-card--gold {
+    border-left: 3px solid #C9A227;
+}
+
+/* ── Silver: Rank 2 — Cool steel grey ──────────────────────────────────── */
+.ranking-card--silver {
+    border-left: 3px solid #8FA0AD;
+}
+
+/* ── Bronze: Rank 3 — Warm terracotta copper ────────────────────────────── */
+.ranking-card--bronze {
+    border-left: 3px solid #A0644A;
+}
+
+/* Medal icon colours — match the border colours exactly */
+.rank-medal        { font-size: 1.2rem; display: block; line-height: 1; }
+.rank-medal--gold  { color: #C9A227; }
+.rank-medal--silver{ color: #8FA0AD; }
+.rank-medal--bronze{ color: #A0644A; }
+
+
+/* =============================================================================
+   08. RANKING CARD — "ME" (CURRENT USER) HIGHLIGHT
+   The logged-in student's card gets an accent-secondary left border.
+   When combined with a medal card, medal border takes visual priority via specificity.
+   The you-badge inside the name line is the primary identifier.
+============================================================================= */
+
+.ranking-card--me {
+    border-left: 3px solid var(--accent-secondary);
+}
+
+/* Medal + Me: Medal border wins — the "You" badge is the secondary indicator */
+.ranking-card--gold.ranking-card--me   { border-left: 3px solid #C9A227; }
+.ranking-card--silver.ranking-card--me { border-left: 3px solid #8FA0AD; }
+.ranking-card--bronze.ranking-card--me { border-left: 3px solid #A0644A; }
+
+
+/* =============================================================================
+   09. AVATAR
+   Initials circle. Sized consistently across list and sticky dock.
+   Medal ranks 1-3 receive a coloured box-shadow "ring" that glows softly —
+   this replaces the old full-row background tint as the status signal.
+   The --me variant swaps to accent-secondary ring + background.
+============================================================================= */
+
+.lb-avatar {
+    width:            38px;
+    height:           38px;
+    flex-shrink:      0;
+    border-radius:    50%;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        0.72rem;
+    font-weight:      700;
+    letter-spacing:   0.03em;
+    background-color: color-mix(in srgb, var(--accent-secondary) 12%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border:           1.5px solid color-mix(in srgb, var(--accent-secondary) 22%, transparent);
+    transition:       box-shadow 0.22s ease;
+}
+
+/* Gold ring — warm glow matching the left border */
+.lb-avatar--gold {
+    background-color: color-mix(in srgb, #C9A227 15%, var(--bg-card));
+    color:            #9A780E;
+    border-color:     #C9A227;
+    box-shadow:       0 0 0 3px rgba(201, 162, 39, 0.2), 0 0 10px rgba(201, 162, 39, 0.18);
+}
+
+/* Silver ring — cool, restrained */
+.lb-avatar--silver {
+    background-color: color-mix(in srgb, #8FA0AD 15%, var(--bg-card));
+    color:            #5A7080;
+    border-color:     #8FA0AD;
+    box-shadow:       0 0 0 3px rgba(143, 160, 173, 0.2), 0 0 10px rgba(143, 160, 173, 0.15);
+}
+
+/* Bronze ring — warm, earthy */
+.lb-avatar--bronze {
+    background-color: color-mix(in srgb, #A0644A 15%, var(--bg-card));
+    color:            #7A3E28;
+    border-color:     #A0644A;
+    box-shadow:       0 0 0 3px rgba(160, 100, 74, 0.2), 0 0 10px rgba(160, 100, 74, 0.15);
+}
+
+/* Accent-secondary ring — current user */
+.lb-avatar--me {
+    background-color: color-mix(in srgb, var(--accent-secondary) 15%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border-color:     var(--accent-secondary);
+    box-shadow:       0 0 0 3px rgba(var(--accent-secondary-rgb), 0.18);
+}
+
+/* Hover: gently amplify the ring on medal rows */
+.ranking-card--gold:hover   .lb-avatar--gold   { box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.32), 0 0 16px rgba(201, 162, 39, 0.22); }
+.ranking-card--silver:hover .lb-avatar--silver { box-shadow: 0 0 0 3px rgba(143, 160, 173, 0.32), 0 0 14px rgba(143, 160, 173, 0.18); }
+.ranking-card--bronze:hover .lb-avatar--bronze { box-shadow: 0 0 0 3px rgba(160, 100, 74, 0.32),  0 0 14px rgba(160, 100, 74, 0.18); }
+
+/* Sticky dock avatar — slightly larger for breathing room */
+.sticky-me__inner .lb-avatar {
+    width:  40px;
+    height: 40px;
+}
+
+
+/* =============================================================================
+   10. POINTS PILL
+   Compact score badge. Base colour: accent-secondary at low opacity.
+   --accent variant (used in sticky bar) has a filled border.
+============================================================================= */
+
+.pts-pill {
+    display:          inline-flex;
+    align-items:      baseline;
+    gap:              0.15rem;
+    padding:          0.3rem 0.75rem;
+    border-radius:    20px;
+    font-size:        0.85rem;
+    font-weight:      700;
+    letter-spacing:   -0.01em;
+    white-space:      nowrap;
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 22%, transparent);
+    transition:       background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.pts-pill__label {
+    font-size:  0.68rem;
+    font-weight:500;
+    opacity:    0.65;
+}
+
+/* Accent variant — sticky bar and my-row highlight */
+.pts-pill--accent {
+    background-color: color-mix(in srgb, var(--accent-secondary) 16%, var(--bg-card));
+    border-color:     var(--accent-secondary);
+    color:            var(--accent-secondary);
+}
+
+
+/* =============================================================================
+   11. YOU BADGE
+   Small capsule identifying the current user. Two sizes:
+   default (inside ranking card name) and --sm (inside sticky dock).
+============================================================================= */
+
+.you-badge {
+    display:          inline-flex;
+    align-items:      center;
+    padding:          0.12rem 0.5rem;
+    font-size:        0.62rem;
+    font-weight:      700;
+    letter-spacing:   0.07em;
+    text-transform:   uppercase;
+    border-radius:    20px;
+    background-color: var(--accent-secondary);
+    color:            #ffffff;
+    white-space:      nowrap;
+    flex-shrink:      0;
+    line-height:      1;
+}
+
+.you-badge--sm {
+    font-size: 0.58rem;
+    padding:   0.1rem 0.45rem;
+}
+
+
+/* =============================================================================
+   12. STICKY DOCK BAR — "Your Position"
+   Fixed full-width bar pinned to the bottom of the viewport.
+   Outer element spans 100vw. Inner content aligns to lb-wrapper's max-width
+   (1080px) so the data column lines up with the page.
+
+   Visual language:
+   — accent-secondary TOP border: crisp separator from scroll content
+   — backdrop-filter blur + slight card transparency: floating depth
+   — no border-radius: flush to the device bottom edge (like iOS tab bar)
+   — upward box-shadow: separates it from the page content above
+============================================================================= */
+
+.sticky-me {
+    position:   fixed;
+    bottom:     0;
+    left:       0;
+    right:      0;
+    z-index:    200;
+    background-color: color-mix(in srgb, var(--bg-card) 82%, transparent);
+    backdrop-filter:  blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 2px solid var(--accent-secondary);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.07), 0 -1px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Inner content — aligns to the lb-wrapper column width */
+.sticky-me__inner {
+    max-width:   1080px;
+    margin:      0 auto;
+    padding:     0.7rem 1.5rem;
+    display:     flex;
+    align-items: center;
+    gap:         0.75rem;
+}
+
+@media (min-width: 768px) {
+    .sticky-me__inner { padding: 0.75rem 2rem; }
+}
+
+/* Rank indicator */
+.sticky-me__rank {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+    width:           36px;
+}
+
+/* Name + dept/year meta — truncates cleanly */
+.sticky-me__info {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.1rem;
+    flex:           1;
+    min-width:      0;
+}
+
+.sticky-me__name {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         var(--text-primary);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+}
+
+.sticky-me__meta {
+    font-size:   0.74rem;
+    color:       var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* Points — pushed fully right by you-badge's natural placement */
+.sticky-me__pts { flex-shrink: 0; }
+
+
+/* =============================================================================
+   13. EMPTY & NO-RESULTS STATES
+============================================================================= */
+
+/* Full-page empty card — shown when query returns zero rows */
+.lb-empty-card {
+    display:          flex;
+    flex-direction:   column;
+    align-items:      center;
+    text-align:       center;
+    padding:          4rem 2rem 5rem;
+    gap:              0.65rem;
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    var(--border-radius-lg);
+    box-shadow:       var(--card-shadow);
+}
+
+.lb-empty__icon {
+    font-size:     2.5rem;
+    color:         var(--border-color);
+    margin-bottom: 0.25rem;
+}
+
+.lb-empty__title {
+    font-size:   1rem;
+    font-weight: 700;
+    color:       var(--text-primary);
+    margin:      0;
+}
+
+.lb-empty__sub {
+    font-size: 0.85rem;
+    color:     var(--text-secondary);
+    margin:    0;
+}
+
+/* Inline no-results message (shown by JS search filter) */
+.lb-no-results {
+    display:     flex;
+    align-items: center;
+    gap:         0.5rem;
+    padding:     1.5rem 1.25rem;
+    font-size:   0.875rem;
+    color:       var(--text-secondary);
+    background-color: var(--bg-card);
+    border:      1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    margin-top:  0.5rem;
+}
+
+.lb-no-results i { color: var(--text-muted); }
+
+
+/* =============================================================================
+   14. DARK MODE OVERRIDES
+   Most adaptations happen automatically via CSS variable inheritance.
+   These overrides handle edge-cases where dark mode needs an explicit nudge.
+============================================================================= */
+
+[data-theme="dark"] .lb-card {
+    box-shadow: none;
+}
+
+[data-theme="dark"] .lb-search {
+    background-color: var(--bg-subtle);
+    color:            var(--text-primary);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .lb-search:focus {
+    border-color: color-mix(in srgb, var(--accent-secondary) 70%, #72C0DC);
+}
+
+[data-theme="dark"] .filter-pill-wrap {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .filter-pill-wrap:hover {
+    background-color: color-mix(in srgb, var(--accent-secondary) 15%, var(--bg-subtle));
+}
+
+[data-theme="dark"] .filter-pill { color: var(--text-primary); }
+
+/* Dark mode active filter pill */
+[data-theme="dark"] .filter-pill-wrap--active {
+    background-color: color-mix(in srgb, var(--accent-secondary) 60%, #001A2B);
+    border-color:     color-mix(in srgb, var(--accent-secondary) 80%, transparent);
+}
+
+/* Dark mode stat blocks */
+[data-theme="dark"] .lb-stat-block {
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
+}
+
+[data-theme="dark"] .lb-stat-block__label {
+    color: #72C0DC; /* dark-mode text-heading — matches the page heading colour */
+}
+
+/* Dark mode ranking cards: no shadow at rest, darker lift on hover */
+[data-theme="dark"] .ranking-card {
+    box-shadow: none;
+}
+
+/* Dark mode avatar: rings are slightly more visible against the dark surface */
+[data-theme="dark"] .lb-avatar--gold {
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.3), 0 0 14px rgba(201, 162, 39, 0.2);
+}
+[data-theme="dark"] .lb-avatar--silver {
+    box-shadow: 0 0 0 3px rgba(143, 160, 173, 0.3), 0 0 12px rgba(143, 160, 173, 0.18);
+}
+[data-theme="dark"] .lb-avatar--bronze {
+    box-shadow: 0 0 0 3px rgba(160, 100, 74, 0.3), 0 0 12px rgba(160, 100, 74, 0.18);
+}
+
+/* Dark mode sticky bar — richer blur, more opaque bg, deeper separator */
+[data-theme="dark"] .sticky-me {
+    background-color: color-mix(in srgb, var(--bg-card) 92%, transparent);
+    box-shadow:       0 -4px 30px rgba(0, 0, 0, 0.4);
+    border-top-color: color-mix(in srgb, var(--accent-secondary) 60%, #72C0DC);
+}
+
+[data-theme="dark"] .lb-empty-card,
+[data-theme="dark"] .lb-no-results {
+    box-shadow: none;
+}
+
+
+/* =============================================================================
+   15. ACCESSIBILITY & PRINT
+   Focus rings are always visible (never hidden by the theme). Print strips
+   interactive chrome (search, filters, sticky bar) and forces columns to render.
+============================================================================= */
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius:  4px;
+}
+
+.ranking-card:focus-within {
+    outline: none; /* cards don't have focusable children by default */
+}
+
+@media print {
+    .lb-controls,
+    .sticky-me { display: none !important; }
+
+    .lb-wrapper { padding-bottom: 2rem; }
+
+    /* Restore clean print row with department and year visible */
+    .ranking-card {
+        border:        1px solid #ddd !important;
+        border-radius: 0 !important;
+        box-shadow:    none !important;
+        transform:     none !important;
+        padding:       0.6rem 1rem !important;
+    }
+
+    .ranking-card__meta::after {
+        content: " (See dept/year above)"; /* fallback — meta is always visible now */
+    }
+
+    .ranking-card--gold   { border-left: 3px solid #C9A227 !important; }
+    .ranking-card--silver { border-left: 3px solid #8FA0AD !important; }
+    .ranking-card--bronze { border-left: 3px solid #A0644A !important; }
+}

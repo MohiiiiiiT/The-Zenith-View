@@ -1,0 +1,1363 @@
+/* =============================================================================
+   THE ZENITH VIEW — /assets/css/login_style.css
+   Zenith Design System v3.0 | Premium Architectural Split-Screen Login
+   Loaded AFTER style.css — inherits all CSS custom properties.
+
+   TABLE OF CONTENTS
+   -----------------
+   01. Font Import (DM Sans — display weight for left panel headlines)
+   02. Page Shell & Reset
+   03. Split Layout Container (55/45 desktop grid)
+   04. LEFT PANEL — Architectural Brand Canvas
+       04a. Geometric Shape Elements
+       04b. Grid Overlay
+       04c. Brand Mark
+       04d. Hero Copy
+       04e. Stats Strip
+   05. RIGHT PANEL — Form Stage
+   06. Mobile Brand Header (mobile-only logo above card)
+   07. Glass Login Card
+   08. Card Header (greeting + title + sub)
+   09. Floating Label Inputs
+   10. Password Eye Toggle
+   11. Remember Me + Forgot Password Row
+   12. Submit Button
+   13. Card Footer Links
+   14. Flash Alert Messages
+   15. Theme Toggle Button (fixed top-right)
+   16. Dark Mode Refinements
+   17. Responsive — Tablet (≤1024px) & Mobile (≤768px) & Small (≤480px)
+   18. Entrance Animations
+============================================================================= */
+
+
+/* =============================================================================
+   01. FONT IMPORT
+   DM Sans: sharp, geometric, confident — left panel display headlines.
+   Inter: already loaded by style.css — form labels and body copy.
+============================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,900;1,9..40,300&display=swap');
+
+
+/* =============================================================================
+   02. PAGE SHELL & RESET
+============================================================================= */
+*, *::before, *::after {
+    box-sizing:  border-box;
+    margin:      0;
+    padding:     0;
+}
+
+html, body {
+    height:   100%;
+    overflow: hidden; /* Single-screen desktop layout — no page scroll */
+}
+
+body {
+    font-family:             'Inter', -apple-system, sans-serif;
+    background-color:        var(--bg-main, #F4F6F9);
+    color:                   var(--text-primary, #212529);
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition:              background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* =============================================================================
+   03. SPLIT LAYOUT CONTAINER
+   55% left (brand canvas) / 45% right (form stage) on desktop.
+============================================================================= */
+.login-split {
+    display:               grid;
+    grid-template-columns: 55fr 45fr;
+    height:                100dvh;
+    width:                 100%;
+    overflow:              hidden;
+}
+
+
+/* =============================================================================
+   04. LEFT PANEL — Architectural Brand Canvas
+   Deep Trust Blue foundation with Power Red angular geometry.
+   Fully hidden on mobile (display:none) — no trace of the panel remains.
+============================================================================= */
+.login-left {
+    position:        relative;
+    overflow:        hidden;
+    /* Deep Trust Blue base — darker than the variable for more depth */
+    background:      #002235;
+    display:         flex;
+    flex-direction:  column;
+    justify-content: space-between;
+    padding:         3rem 3.5rem;
+}
+
+
+/* ── 04a. Geometric Shape Elements ─────────────────────────────────────────
+   Three layered architectural shapes using only brand colours.
+   ::before / ::after handle two shapes; extra divs handle the rest.
+   This avoids z-index stacking fights between pseudo-elements.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* Shape A — Large Power Red angled slab, top-right */
+.login-left::before {
+    content:    '';
+    position:   absolute;
+    top:        -10%;
+    right:      -12%;
+    width:      62%;
+    height:     70%;
+    background: var(--accent-primary, #B7202E);
+    clip-path:  polygon(28% 0%, 100% 0%, 100% 100%, 0% 100%);
+    opacity:    0.9;
+    z-index:    0;
+}
+
+/* Shape B — Deep blue diamond, lower-left corner — adds structural weight */
+.login-left::after {
+    content:    '';
+    position:   absolute;
+    bottom:     -14%;
+    left:       -10%;
+    width:      52%;
+    height:     48%;
+    background: rgba(0, 68, 102, 0.45);
+    clip-path:  polygon(0 25%, 100% 0%, 85% 100%, 0% 78%);
+    border:     1px solid rgba(255, 255, 255, 0.06);
+    z-index:    0;
+}
+
+/* Shape C — Thin Power Red accent sliver, mid-right — adds dynamism */
+.left-shape-a {
+    position:   absolute;
+    top:        30%;
+    right:      0;
+    width:      3px;
+    height:     35%;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(237, 28, 36, 0.6) 40%,
+        transparent 100%
+    );
+    z-index:    1;
+}
+
+/* Shape D — Faint white parallelogram, upper-left, adds geometry without noise */
+.left-shape-b {
+    position:   absolute;
+    top:        8%;
+    left:       -5%;
+    width:      40%;
+    height:     28%;
+    background: rgba(255, 255, 255, 0.025);
+    clip-path:  polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+    border:     1px solid rgba(255, 255, 255, 0.05);
+    z-index:    0;
+}
+
+/* Shape E — Red-to-transparent corner bleed on bottom-right */
+.left-shape-c {
+    position:   absolute;
+    bottom:     0;
+    right:      0;
+    width:      45%;
+    height:     30%;
+    background: linear-gradient(
+        135deg,
+        transparent 40%,
+        rgba(183, 32, 46, 0.18) 100%
+    );
+    z-index:    0;
+}
+
+
+/* ── 04b. Geometric Grid Overlay ────────────────────────────────────────────
+   Fine engineering-grid lines etched into the panel — gives architectural depth.
+──────────────────────────────────────────────────────────────────────────── */
+.left-grid {
+    position:         absolute;
+    inset:            0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03)  1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size:  48px 48px;
+    z-index:          1;
+    pointer-events:   none;
+}
+
+/* Radial vignette — fades the grid at edges for depth */
+.left-grid::after {
+    content:    '';
+    position:   absolute;
+    inset:      0;
+    background: radial-gradient(
+        ellipse at 35% 45%,
+        transparent 35%,
+        rgba(0, 25, 42, 0.75) 100%
+    );
+}
+
+
+/* ── 04c. Brand Mark ────────────────────────────────────────────────────────
+   Logo icon + app name + college name in the top-left of the panel.
+──────────────────────────────────────────────────────────────────────────── */
+.left-content-top {
+    position: relative;
+    z-index:  2;
+}
+
+.left-brand {
+    display:         flex;
+    align-items:     center;
+    gap:             0.75rem;
+    text-decoration: none;
+}
+
+/* Size override for left panel — inherits gradient/radius from style.css */
+.left-brand .brand-logo-mark {
+    width:      44px;
+    height:     44px;
+    font-size:  1.2rem;
+    transition: none; /* decorative link — no hover transform */
+    flex-shrink:0;
+}
+
+.left-brand-text {
+    display:        flex;
+    flex-direction: column;
+    gap:            2px;
+}
+
+.left-brand-name {
+    font-family:    'DM Sans', sans-serif;
+    font-size:      1rem;
+    font-weight:    700;
+    color:          #fff;
+    letter-spacing: -0.02em;
+    line-height:    1;
+}
+
+.left-brand-college {
+    font-size:      0.6rem;
+    font-weight:    400;
+    color:          rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+
+/* ── 04d. Hero Copy ─────────────────────────────────────────────────────────
+   Large display type centred in the left panel.
+──────────────────────────────────────────────────────────────────────────── */
+.left-hero {
+    position: relative;
+    z-index:  2;
+}
+
+.left-eyebrow {
+    display:      flex;
+    align-items:  center;
+    gap:          0.6rem;
+    margin-bottom:1.5rem;
+}
+
+.eyebrow-dash {
+    width:         28px;
+    height:        2px;
+    background:    var(--accent-primary, #B7202E);
+    border-radius: 2px;
+    flex-shrink:   0;
+}
+
+.eyebrow-text {
+    font-size:      0.65rem;
+    font-weight:    600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color:          rgba(255, 255, 255, 0.5);
+}
+
+.left-headline {
+    font-family:    'DM Sans', sans-serif;
+    font-size:      clamp(2.5rem, 3.2vw, 4rem);
+    font-weight:    900;
+    line-height:    1.0;
+    letter-spacing: -0.04em;
+    color:          #FFFFFF;
+    margin-bottom:  1.5rem;
+}
+
+.left-headline em {
+    font-style: normal;
+    color:      rgba(255, 255, 255, 0.3);
+}
+
+/* Brightened red for legibility on the dark canvas */
+.left-headline .hl-red {
+    color: #FF5560;
+}
+
+.left-sub {
+    font-size:   0.875rem;
+    line-height: 1.75;
+    color:       rgba(255, 255, 255, 0.45);
+    max-width:   360px;
+    font-weight: 300;
+}
+
+
+/* ── 04e. Stats Strip ───────────────────────────────────────────────────────
+   Live numbers pinned to the bottom of the left panel.
+──────────────────────────────────────────────────────────────────────────── */
+.left-stats {
+    position:    relative;
+    z-index:     2;
+    display:     flex;
+    gap:         0;
+    border-top:  1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+}
+
+.left-stat {
+    flex:          1;
+    padding-right: 2rem;
+    border-right:  1px solid rgba(255, 255, 255, 0.1);
+}
+
+.left-stat:first-child {
+    padding-left: 0;
+}
+
+.left-stat:last-child {
+    border-right: none;
+    padding-right:0;
+    padding-left: 2rem;
+}
+
+.left-stat:not(:first-child):not(:last-child) {
+    padding-left: 2rem;
+}
+
+.stat-number {
+    font-family:    'DM Sans', sans-serif;
+    font-size:      2rem;
+    font-weight:    900;
+    color:          #fff;
+    letter-spacing: -0.04em;
+    line-height:    1;
+    display:        block;
+    margin-bottom:  0.2rem;
+}
+
+.stat-label {
+    font-size:      0.62rem;
+    font-weight:    500;
+    color:          rgba(255, 255, 255, 0.38);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+
+/* =============================================================================
+   05. RIGHT PANEL — Form Stage
+   Light background (var(--bg-main)) with the glass card centred inside.
+============================================================================= */
+.login-right {
+    position:         relative;
+    display:          flex;
+    flex-direction:   column;
+    align-items:      center;
+    justify-content:  center;
+    padding:          2rem 2.5rem;
+    overflow-y:       auto;
+    overflow-x:       hidden;
+    background-color: var(--bg-main, #F4F6F9);
+    transition:       background-color 0.3s ease;
+}
+
+/* Subtle noise texture — depth without imagery */
+.login-right::before {
+    content:          '';
+    position:         fixed;
+    inset:            0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size:  200px 200px;
+    pointer-events:   none;
+    z-index:          0;
+    opacity:          0.5;
+}
+
+/* Ambient radial glow behind the card */
+.right-glow {
+    position:   absolute;
+    top:        50%;
+    left:       50%;
+    transform:  translate(-50%, -50%);
+    width:      480px;
+    height:     480px;
+    background: radial-gradient(
+        ellipse,
+        rgba(0, 68, 102, 0.06) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index:    0;
+    border-radius: 50%;
+}
+
+.login-right-inner {
+    position:        relative;
+    z-index:         1;
+    width:           100%;
+    max-width:       420px;
+    display:         flex;
+    flex-direction:  column;
+    gap:             1.5rem;
+}
+
+
+/* =============================================================================
+   06. MOBILE BRAND HEADER
+   Completely hidden on desktop (≥769px).
+   On mobile, the left panel is display:none — this block replaces it.
+   Simple centred layout: logo icon + app name + college tagline.
+   NO fake navbar, NO floating buttons — just clean brand presence.
+============================================================================= */
+.mobile-brand-header {
+    display: none; /* Shown only in the mobile media query below */
+}
+
+.mobile-brand-link {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.75rem;
+    text-decoration: none;
+}
+
+/* Size override — inherits gradient/radius/shadow from style.css */
+.mobile-logo-mark {
+    width:       40px;
+    height:      40px;
+    font-size:   1.05rem;
+    flex-shrink: 0;
+    transition:  none; /* decorative link — no hover transform */
+}
+
+.mobile-brand-text {
+    display:        flex;
+    flex-direction: column;
+    gap:            2px;
+}
+
+.mobile-brand-name {
+    font-family:    'DM Sans', sans-serif;
+    font-size:      1.05rem;
+    font-weight:    700;
+    /* Desktop default — deep blue heading on light bg */
+    color:          var(--text-heading, #004466);
+    letter-spacing: -0.02em;
+    line-height:    1;
+}
+
+.mobile-brand-college {
+    font-size:      0.6rem;
+    font-weight:    500;
+    /* Desktop default — muted on light bg */
+    color:          var(--text-muted, #8C9097);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+/* Dark mode overrides for the desktop right-panel bg variant */
+[data-theme="dark"] .mobile-brand-name    { color: var(--text-primary, #E9ECEF); }
+[data-theme="dark"] .mobile-brand-college { color: var(--text-secondary, #ADB5BD); }
+
+/* ── Mobile-specific brand colours ─────────────────────────────────────────
+   On mobile the background is the dark blue architectural canvas (not light),
+   so the brand text MUST be white/light to remain legible.
+   Scoped inside the media query below but declared here for clarity.
+   These rules are re-declared inside the @media block as well.
+──────────────────────────────────────────────────────────────────────────── */
+
+
+/* =============================================================================
+   07. GLASS LOGIN CARD
+   Premium glassmorphism: backdrop-filter blur, semi-transparent bg,
+   inner highlight, SaaS-grade shadow stack, top accent line.
+============================================================================= */
+.login-card {
+    position:              relative;
+    overflow:              hidden;
+    background:            rgba(255, 255, 255, 0.70);
+    backdrop-filter:       blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border:                1px solid rgba(255, 255, 255, 0.88);
+    border-radius:         20px;
+    padding:               2.5rem 2.25rem 2rem;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.09),
+        0 2px  10px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Top accent gradient line — brand colours, left to right */
+.login-card::before {
+    content:       '';
+    position:      absolute;
+    top:           0;
+    left:          0;
+    right:         0;
+    height:        2.5px;
+    background:    linear-gradient(
+        90deg,
+        var(--accent-secondary, #004466) 0%,
+        var(--accent-primary, #B7202E)   55%,
+        transparent 100%
+    );
+    border-radius: 20px 20px 0 0;
+    opacity:       0.8;
+}
+
+
+/* =============================================================================
+   08. CARD HEADER
+============================================================================= */
+.card-head {
+    margin-bottom: 2rem;
+}
+
+.card-greeting {
+    display:        block;
+    font-size:      0.68rem;
+    font-weight:    600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color:          var(--accent-primary, #B7202E);
+    margin-bottom:  0.4rem;
+}
+
+.card-title {
+    font-family:    'DM Sans', sans-serif;
+    font-size:      1.85rem;
+    font-weight:    900;
+    color:          var(--text-heading, #004466);
+    letter-spacing: -0.035em;
+    line-height:    1.1;
+    margin-bottom:  0.3rem;
+}
+
+.card-sub {
+    font-size:   0.83rem;
+    color:       var(--text-muted, #8C9097);
+    line-height: 1.5;
+    /* Slightly more breathing room below — toggle no longer follows, inputs do */
+    margin-bottom: 0.25rem;
+}
+
+
+/* =============================================================================
+   09. FLOATING LABEL INPUTS
+   Label acts as the placeholder; floats to top-left on focus / content.
+============================================================================= */
+.field-group {
+    position:      relative;
+    margin-bottom: 1.25rem;
+}
+
+.field-group:last-of-type { margin-bottom: 0; }
+
+.field-input {
+    width:              100%;
+    height:             54px;
+    padding:            20px 1rem 6px 1rem;
+    font-family:        'Inter', sans-serif;
+    font-size:          0.9rem;
+    font-weight:        400;
+    color:              var(--text-primary, #212529);
+    background:         var(--bg-subtle, #F8F9FB);
+    border:             1.5px solid var(--border-color, #E9ECEF);
+    border-radius:      12px;
+    outline:            none;
+    transition:
+        border-color 0.2s ease,
+        background   0.2s ease,
+        box-shadow   0.2s ease;
+    -webkit-appearance: none;
+}
+
+/* Extra right padding for password field (eye button occupies that space) */
+.field-input.has-icon-right { padding-right: 2.8rem; }
+
+/* Placeholder must be transparent — the label acts as the placeholder */
+.field-input::placeholder { color: transparent; }
+
+.field-input:focus {
+    border-color: var(--accent-secondary, #004466);
+    background:   var(--bg-card, #FFFFFF);
+    box-shadow:   0 0 0 3px rgba(0, 68, 102, 0.10);
+}
+
+/* Autofill style suppression — prevents ugly chrome yellow fill */
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:focus {
+    -webkit-box-shadow:      0 0 0 1000px var(--bg-subtle, #F8F9FB) inset !important;
+    -webkit-text-fill-color: var(--text-primary, #212529) !important;
+    transition:              background-color 5000s ease; /* effectively disables transition */
+}
+
+/* The floating label */
+.field-label {
+    position:       absolute;
+    left:           1rem;
+    top:            50%;
+    transform:      translateY(-50%);
+    font-size:      0.88rem;
+    font-weight:    500;
+    color:          var(--text-muted, #8C9097);
+    pointer-events: none;
+    transition:
+        top       0.2s ease,
+        transform 0.2s ease,
+        font-size 0.2s ease,
+        color     0.2s ease;
+    transform-origin: left center;
+    white-space:    nowrap;
+}
+
+/* Float label up when input is focused OR has content */
+.field-input:focus ~ .field-label,
+.field-input:not(:placeholder-shown) ~ .field-label {
+    top:       12px;
+    transform: translateY(0) scale(0.78);
+    color:     var(--accent-secondary, #004466);
+    font-size: 0.88rem; /* Scaled visually by transform */
+}
+
+
+/* =============================================================================
+   10. PASSWORD EYE TOGGLE
+============================================================================= */
+.field-eye {
+    position:    absolute;
+    right:       0.85rem;
+    top:         50%;
+    transform:   translateY(-50%);
+    background:  none;
+    border:      none;
+    color:       var(--text-muted, #8C9097);
+    cursor:      pointer;
+    padding:     0.25rem;
+    display:     flex;
+    align-items: center;
+    font-size:   1rem;
+    transition:  color 0.2s ease;
+    line-height: 1;
+}
+
+.field-eye:hover { color: var(--accent-secondary, #004466); }
+
+
+/* =============================================================================
+   11. REMEMBER ME + FORGOT PASSWORD ROW
+============================================================================= */
+.form-meta {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    margin:          1.25rem 0 0;
+    gap:             0.5rem;
+}
+
+.custom-check {
+    display:     flex;
+    align-items: center;
+    gap:         0.5rem;
+    cursor:      pointer;
+    user-select: none;
+}
+
+.custom-check input[type="checkbox"] {
+    appearance:         none;
+    -webkit-appearance: none;
+    width:              18px;
+    height:             18px;
+    border:             1.5px solid var(--border-color, #E9ECEF);
+    border-radius:      5px;
+    background:         var(--bg-card, #fff);
+    cursor:             pointer;
+    position:           relative;
+    flex-shrink:        0;
+    transition:         border-color 0.2s ease, background 0.2s ease;
+}
+
+.custom-check input[type="checkbox"]:checked {
+    background:   var(--accent-secondary, #004466);
+    border-color: var(--accent-secondary, #004466);
+}
+
+/* CSS checkmark */
+.custom-check input[type="checkbox"]:checked::after {
+    content:     '';
+    position:    absolute;
+    left:        4px;
+    top:         1px;
+    width:       6px;
+    height:      10px;
+    border:      2px solid #fff;
+    border-top:  none;
+    border-left: none;
+    transform:   rotate(42deg);
+}
+
+.check-label {
+    font-size:  0.78rem;
+    font-weight:500;
+    color:      var(--text-secondary, #58595B);
+    transition: color 0.3s ease;
+}
+
+.forgot-link {
+    font-size:       0.78rem;
+    font-weight:     600;
+    color:           var(--accent-secondary, #004466);
+    text-decoration: none;
+    transition:      color 0.2s ease;
+}
+
+.forgot-link:hover {
+    color:           var(--accent-primary, #B7202E);
+    text-decoration: underline;
+}
+
+
+/* =============================================================================
+   12. SUBMIT BUTTON
+   Full-width, Power Red gradient, shine-sweep hover effect.
+============================================================================= */
+.btn-submit {
+    width:           100%;
+    height:          52px;
+    margin-top:      1.5rem;
+    background:      linear-gradient(135deg,
+        var(--accent-primary, #B7202E) 0%,
+        #D42535 100%
+    );
+    color:           #fff;
+    font-family:     'Inter', sans-serif;
+    font-size:       0.9rem;
+    font-weight:     700;
+    letter-spacing:  0.025em;
+    border:          none;
+    border-radius:   12px;
+    cursor:          pointer;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.5rem;
+    position:        relative;
+    overflow:        hidden;
+    box-shadow:      0 4px 18px rgba(183, 32, 46, 0.32);
+    transition:
+        transform  0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Shine sweep on hover */
+.btn-submit::after {
+    content:    '';
+    position:   absolute;
+    top:        0;
+    left:       -100%;
+    width:      60%;
+    height:     100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(183, 32, 46, 0.40); }
+.btn-submit:hover::after { left: 150%; }
+.btn-submit:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(183, 32, 46, 0.25); }
+
+/* Loading state */
+.btn-submit.loading { opacity: 0.75; pointer-events: none; }
+
+.btn-spinner {
+    display:       none;
+    width:         18px;
+    height:        18px;
+    border:        2.5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation:     spin 0.65s linear infinite;
+}
+
+.btn-submit.loading .btn-text    { display: none; }
+.btn-submit.loading .btn-spinner { display: block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* =============================================================================
+   13. CARD FOOTER LINKS
+============================================================================= */
+.card-footer-links {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.5rem;
+    margin-top:      1.5rem;
+    padding-top:     1.25rem;
+    border-top:      1px solid var(--border-color, #E9ECEF);
+    transition:      border-color 0.3s ease;
+}
+
+.back-home-link {
+    font-size:       0.8rem;
+    font-weight:     500;
+    color:           var(--text-muted, #8C9097);
+    text-decoration: none;
+    display:         flex;
+    align-items:     center;
+    gap:             0.3rem;
+    padding:         0.3rem 0.6rem;
+    border-radius:   6px;
+    transition:      color 0.2s ease, background 0.2s ease;
+}
+
+.back-home-link:hover {
+    color:           var(--text-heading, #004466);
+    background:      rgba(0, 68, 102, 0.06);
+    text-decoration: none;
+}
+
+.footer-divider {
+    width:      1px;
+    height:     14px;
+    background: var(--border-color, #E9ECEF);
+    flex-shrink:0;
+}
+
+.legal-note {
+    font-size:  0.72rem;
+    color:      var(--text-muted, #8C9097);
+    text-align: center;
+    line-height:1.5;
+    transition: color 0.3s ease;
+}
+
+
+/* =============================================================================
+   14. FLASH ALERT MESSAGES
+============================================================================= */
+.login-alert {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           0.55rem;
+    padding:       0.75rem 1rem;
+    border-radius: 10px;
+    font-size:     0.82rem;
+    font-weight:   500;
+    line-height:   1.45;
+    margin-bottom: 1rem;
+}
+
+.login-alert i { flex-shrink: 0; margin-top: 1px; }
+
+.login-alert.error {
+    background: rgba(183, 32, 46, 0.07);
+    border:     1px solid rgba(183, 32, 46, 0.16);
+    color:      var(--accent-primary, #B7202E);
+}
+
+.login-alert.success {
+    background: rgba(34, 197, 94, 0.07);
+    border:     1px solid rgba(34, 197, 94, 0.18);
+    color:      #166534;
+}
+
+
+/* =============================================================================
+   15. THEME TOGGLE BUTTON
+   Fixed to the absolute top-right corner.
+   Visible on ALL screen sizes (desktop + mobile).
+   Position on mobile is adjusted in the media query below so it
+   never overlaps with the mobile brand header or any other content.
+============================================================================= */
+.login-theme-btn {
+    position:        fixed;
+    top:             1.25rem;
+    right:           1.5rem;
+    z-index:         200;
+    background:      var(--bg-card, #FFFFFF);
+    border:          1px solid var(--border-color, #E9ECEF);
+    border-radius:   50%;
+    width:           38px;
+    height:          38px;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-size:       0.95rem;
+    color:           var(--text-muted, #8C9097);
+    cursor:          pointer;
+    box-shadow:      0 2px 8px rgba(0, 0, 0, 0.07);
+    transition:
+        background   0.3s ease,
+        border-color 0.3s ease,
+        color        0.25s ease,
+        box-shadow   0.2s ease;
+}
+
+.login-theme-btn:hover {
+    color:        var(--accent-primary, #B7202E);
+    border-color: var(--accent-primary, #B7202E);
+    box-shadow:   0 4px 14px rgba(183, 32, 46, 0.18);
+}
+
+
+/* =============================================================================
+   16. DARK MODE REFINEMENTS
+============================================================================= */
+
+/* Left panel — deeper blue in dark mode */
+[data-theme="dark"] .login-left {
+    background: #000F1C;
+}
+
+[data-theme="dark"] .login-left::before {
+    opacity: 0.75; /* Slightly reduce the red slab opacity on very dark bg */
+}
+
+/* Right panel background */
+[data-theme="dark"] .login-right {
+    background-color: var(--bg-main, #121416);
+}
+
+/* Ambient glow shift — stays blue but uses dark mode variable */
+[data-theme="dark"] .right-glow {
+    background: radial-gradient(
+        ellipse,
+        rgba(0, 51, 77, 0.12) 0%,
+        transparent 70%
+    );
+}
+
+/* Glass card — darker, less translucent, no harsh shadow */
+[data-theme="dark"] .login-card {
+    background:   rgba(28, 31, 35, 0.82);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Inputs */
+[data-theme="dark"] .field-input {
+    background:   var(--bg-subtle, #15181C);
+    border-color: var(--border-color, #2B3035);
+    color:        var(--text-primary, #E9ECEF);
+}
+
+[data-theme="dark"] .field-input:focus {
+    background:   var(--bg-card, #1C1F23);
+    border-color: #00334D;
+    box-shadow:   0 0 0 3px rgba(0, 51, 77, 0.18);
+}
+
+[data-theme="dark"] .field-input:-webkit-autofill,
+[data-theme="dark"] .field-input:-webkit-autofill:focus {
+    -webkit-box-shadow:      0 0 0 1000px var(--bg-subtle, #15181C) inset !important;
+    -webkit-text-fill-color: var(--text-primary, #E9ECEF) !important;
+}
+
+[data-theme="dark"] .field-input:focus ~ .field-label,
+[data-theme="dark"] .field-input:not(:placeholder-shown) ~ .field-label {
+    color: #72C0DC; /* Dark mode text-heading from style.css */
+}
+
+/* Custom checkbox */
+[data-theme="dark"] .custom-check input[type="checkbox"] {
+    background:   var(--bg-card, #1C1F23);
+    border-color: var(--border-color, #2B3035);
+}
+
+/* Success alert text in dark mode */
+[data-theme="dark"] .login-alert.success { color: #4ade80; }
+
+/* Theme button in dark mode */
+[data-theme="dark"] .login-theme-btn {
+    background:   var(--bg-card, #1C1F23);
+    border-color: var(--border-color, #2B3035);
+    color:        var(--text-muted, #6A7280);
+}
+
+/* Card title in dark mode */
+[data-theme="dark"] .card-title {
+    color: #72C0DC;
+}
+
+/* Footer divider */
+[data-theme="dark"] .footer-divider {
+    background: var(--border-color, #2B3035);
+}
+
+
+/* =============================================================================
+   17. RESPONSIVE
+============================================================================= */
+
+/* ── Tablet (≤1024px) — Compress the split, slightly tighter padding ───────── */
+@media (max-width: 1024px) {
+    .login-split {
+        grid-template-columns: 48fr 52fr;
+    }
+
+    .left-headline { font-size: clamp(2rem, 3vw, 2.8rem); }
+    .login-left    { padding:   2.5rem 2.5rem; }
+}
+
+/* ── Mobile (≤768px) — PREMIUM OVERLAPPING HEADER PATTERN ──────────────────
+   TECHNIQUE: The right panel gets a two-tone split background via a hard-stop
+   linear-gradient — Deep Trust Blue for the top 32%, --bg-main below.
+   No extra markup needed. The inner wrapper is padded so the brand block
+   sits centred in the blue zone. The card uses a negative margin-top to
+   physically bridge the colour boundary, appearing to rise from the blue
+   header into the light grey below. This is the established pattern used
+   by fintech and SaaS apps (e.g. Monzo, Revolut, Brex onboarding flows).
+
+   Z-INDEX STACK (bottom → top):
+     0  — .login-right two-tone background + ::before grid texture
+     0  — .right-glow (disabled / hidden)
+     1  — .login-right-inner (all visible content)
+─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* ── Shell ── */
+    html, body {
+        overflow:         auto;
+        /* Body bg matches the lower zone so there's no flash during scroll */
+        background-color: var(--bg-main, #F4F6F9);
+    }
+
+    .login-split {
+        grid-template-columns: 1fr;
+        grid-template-rows:    auto;
+        min-height:            100dvh;
+    }
+
+    .login-left { display: none; }
+
+
+    /* ════════════════════════════════════════════════════════════════════════
+       THE TWO-TONE SPLIT BACKGROUND
+       Fixed pixel stop at 200px — compact blue header, logo anchored near
+       the top, card overlaps the boundary by ~50px.
+
+       Using px instead of vh eliminates the "too tall on landscape / short
+       viewports" problem. 200px is enough for logo + breathing room but
+       never dominates the screen on any common phone size.
+    ════════════════════════════════════════════════════════════════════════ */
+    .login-right {
+        --mobile-header-h: 200px;   /* Single source of truth for the blue zone height */
+
+        background:      linear-gradient(
+            to bottom,
+            #003355 0px,
+            #003355 var(--mobile-header-h),
+            var(--bg-main, #F4F6F9) var(--mobile-header-h),
+            var(--bg-main, #F4F6F9) 100%
+        );
+        padding:          0;
+        justify-content:  flex-start;
+        align-items:      center;
+        min-height:       100dvh;
+        overflow-y:       auto;
+        overflow-x:       hidden;
+        position:         relative;
+    }
+
+    /* Engineering grid texture — fixed to the blue zone only */
+    .login-right::before {
+        content:          '';
+        position:         fixed;
+        top:              0;
+        left:             0;
+        right:            0;
+        height:           var(--mobile-header-h, 200px);
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+        background-size:  40px 40px;
+        z-index:          0;
+        pointer-events:   none;
+    }
+
+    /* Subtle Power Red diagonal accent — top-right corner of the blue header */
+    .login-right::after {
+        content:    '';
+        position:   fixed;
+        top:        0;
+        right:      -8%;
+        width:      45%;
+        height:     var(--mobile-header-h, 200px);
+        background: var(--accent-primary, #B7202E);
+        clip-path:  polygon(35% 0%, 100% 0%, 100% 100%, 5% 100%);
+        opacity:    0.16;
+        z-index:    0;
+        pointer-events: none;
+    }
+
+    /* Right-glow div not needed on mobile — disable cleanly */
+    .right-glow,
+    .right-glow::before,
+    .right-glow::after {
+        display: none;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════════
+       INNER WRAPPER
+    ════════════════════════════════════════════════════════════════════════ */
+    .login-right-inner {
+        position:        relative;
+        z-index:         1;
+        width:           100%;
+        max-width:       420px;
+        padding:         0 1.25rem 3rem;
+        gap:             0;
+        display:         flex;
+        flex-direction:  column;
+        align-items:     stretch;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════════
+       MOBILE BRAND HEADER BLOCK
+       Fixed height matches --mobile-header-h exactly.
+       Top padding pushes logo away from the very top edge and the
+       theme-toggle button (38px tall + 1rem gap = ~54px clearance).
+       align-items: flex-start + padding-top anchors the logo near the
+       top of the blue zone rather than floating it in the centre.
+    ════════════════════════════════════════════════════════════════════════ */
+    .mobile-brand-header {
+        display:         flex;
+        justify-content: center;
+        align-items:     flex-start;          /* Logo anchors to top, not centre */
+        height:          var(--mobile-header-h, 200px);
+        padding-top:     54px;                /* theme-btn (38px) + 1rem clearance */
+        padding-bottom:  0;
+        box-sizing:      border-box;
+    }
+
+    /* White text on Deep Trust Blue — maximum contrast, on-brand */
+    .mobile-brand-name    { color: #FFFFFF; }
+    .mobile-brand-college { color: rgba(255, 255, 255, 0.55); }
+
+
+    /* ════════════════════════════════════════════════════════════════════════
+       THE OVERLAPPING CARD
+       margin-top: -50px lifts the card 50px into the blue zone — enough to
+       clearly straddle the colour boundary and show the accent stripe
+       against the blue background, but not so much that it swallows the logo.
+    ════════════════════════════════════════════════════════════════════════ */
+    .login-card {
+        margin-top:              -50px;
+        width:                   calc(100% - 2.5rem);
+        margin-left:             auto;
+        margin-right:            auto;
+        padding:                 2rem 1.75rem 1.75rem;
+        border-radius:           20px;
+        background:              var(--bg-card, #FFFFFF);
+        backdrop-filter:         none;
+        -webkit-backdrop-filter: none;
+        border:                  1px solid rgba(0, 0, 0, 0.06);
+        box-shadow:
+            0 16px 40px rgba(0, 0, 0, 0.12),
+            0  4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Top accent gradient line */
+    .login-card::before {
+        background:    linear-gradient(
+            90deg,
+            var(--accent-secondary, #004466) 0%,
+            var(--accent-primary,   #B7202E) 55%,
+            transparent 100%
+        );
+        opacity:       1;
+        height:        3px;
+        border-radius: 20px 20px 0 0;
+    }
+
+    /* ── Card typography — standard light-mode values ── */
+    .card-greeting { color: var(--accent-primary,  #B7202E); }
+    .card-title    { color: var(--text-heading,    #004466); }
+    .card-sub      { color: var(--text-muted,      #8C9097); }
+
+
+    /* ── Inputs ── */
+    .field-input {
+        background:   var(--bg-subtle,    #F8F9FB);
+        border-color: var(--border-color, #E9ECEF);
+        color:        var(--text-primary, #212529);
+    }
+
+    .field-input:focus {
+        background:   var(--bg-card,          #FFFFFF);
+        border-color: var(--accent-secondary, #004466);
+        box-shadow:   0 0 0 3px rgba(0, 68, 102, 0.09);
+    }
+
+    .field-input:-webkit-autofill,
+    .field-input:-webkit-autofill:focus {
+        -webkit-box-shadow:      0 0 0 1000px var(--bg-subtle, #F8F9FB) inset !important;
+        -webkit-text-fill-color: var(--text-primary, #212529) !important;
+    }
+
+    .field-label { color: var(--text-muted, #8C9097); }
+
+    .field-input:focus ~ .field-label,
+    .field-input:not(:placeholder-shown) ~ .field-label {
+        color: var(--accent-secondary, #004466);
+    }
+
+    .field-eye       { color: var(--text-muted, #8C9097); }
+    .field-eye:hover { color: var(--accent-secondary, #004466); }
+
+
+    /* ── Form meta row ── */
+    .check-label       { color: var(--text-secondary, #58595B); }
+    .forgot-link       { color: var(--accent-secondary, #004466); }
+    .forgot-link:hover { color: var(--accent-primary,   #B7202E); }
+
+    .custom-check input[type="checkbox"] {
+        background:   var(--bg-card,      #FFFFFF);
+        border-color: var(--border-color, #E9ECEF);
+    }
+
+    .custom-check input[type="checkbox"]:checked {
+        background:   var(--accent-secondary, #004466);
+        border-color: var(--accent-secondary, #004466);
+    }
+
+
+    /* ── Card footer ── */
+    .card-footer-links { border-top-color: var(--border-color, #E9ECEF); }
+
+    .back-home-link       { color: var(--text-muted, #8C9097); }
+    .back-home-link:hover { color: var(--text-heading, #004466); background: rgba(0,68,102,0.05); }
+
+    .footer-divider { background: var(--border-color, #E9ECEF); }
+    .legal-note     { color: var(--text-muted, #8C9097); }
+
+
+    /* ── Flash alerts ── */
+    .login-alert.error {
+        background:   rgba(183, 32, 46, 0.07);
+        border-color: rgba(183, 32, 46, 0.16);
+        color:        var(--accent-primary, #B7202E);
+    }
+
+    .login-alert.success {
+        background:   rgba(34, 197, 94, 0.07);
+        border-color: rgba(34, 197, 94, 0.18);
+        color:        #166534;
+    }
+
+
+    /* ── Theme toggle — floated over the blue header, white-bordered ── */
+    .login-theme-btn {
+        top:          1rem;
+        right:        1rem;
+        /* Semi-transparent white so it reads on the blue bg behind it */
+        background:   rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.35);
+        color:        rgba(255, 255, 255, 0.85);
+        box-shadow:   none;
+        backdrop-filter:   blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+
+    .login-theme-btn:hover {
+        background:   rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.6);
+        color:        #FFFFFF;
+        box-shadow:   0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+} /* end @media (max-width: 768px) */
+
+
+/* ── Small mobile (≤480px) — slightly more compact on narrow/short screens ── */
+@media (max-width: 480px) {
+    .login-right {
+        /* Reduce header height slightly on small phones */
+        --mobile-header-h: 180px;
+    }
+
+    .mobile-brand-header {
+        height:      var(--mobile-header-h, 180px);
+        padding-top: 50px;  /* Maintains theme-btn clearance on smaller screens */
+    }
+
+    .login-right-inner {
+        padding-left:  1rem;
+        padding-right: 1rem;
+        padding-bottom:2.5rem;
+    }
+
+    .login-card {
+        margin-top:    -46px;
+        width:         calc(100% - 2rem);
+        border-radius: 20px;
+        padding:       1.75rem 1.25rem 1.5rem;
+        border:        1px solid rgba(0, 0, 0, 0.06);
+        box-shadow:
+            0 14px 36px rgba(0, 0, 0, 0.12),
+            0  4px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-title { font-size: 1.55rem; }
+}
+
+
+/* =============================================================================
+   18. ENTRANCE ANIMATIONS
+   Staggered reveals: left panel elements slide in from left.
+   Card fades up from slight offset. Theme button fades in last.
+============================================================================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(-28px); }
+    to   { opacity: 1; transform: translateX(0);     }
+}
+
+/* Staggered left panel reveals */
+.left-content-top { animation: slideRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.10s both; }
+.left-eyebrow     { animation: slideRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both; }
+.left-headline    { animation: slideRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both; }
+.left-sub         { animation: fadeIn     0.6s ease                            0.50s both; }
+.left-stats       { animation: fadeIn     0.6s ease                            0.65s both; }
+
+/* Card and mobile brand entrance */
+.login-card         { animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.mobile-brand-header{ animation: fadeIn 0.5s  ease                            0.10s both; }
+
+/* Theme button fade */
+.login-theme-btn { animation: fadeIn 0.4s ease 0.30s both; }

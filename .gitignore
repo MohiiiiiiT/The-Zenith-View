@@ -1,0 +1,45 @@
+# =============================================================================
+# THE ZENITH VIEW — .gitignore
+# Excludes sensitive credentials, user uploads, and local environment configs.
+# =============================================================================
+
+# --- Environment & Credentials ---
+# CRITICAL: Never commit database credentials to version control.
+includes/config.php
+
+# --- User-Uploaded Files ---
+# The /uploads/ directory holds student-submitted certificates.
+# These are large binary files and must never be tracked.
+uploads/certificates/*
+
+# Keep the directory structure intact in the repo via a placeholder,
+# but ignore actual uploaded files.
+!uploads/certificates/.gitkeep
+!uploads/index.php
+
+# --- PHPMailer / Composer Dependencies ---
+# If using Composer to manage PHPMailer, exclude the vendor folder.
+vendor/
+
+# --- OS & IDE Junk Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# --- Local Server / XAMPP Logs ---
+*.log
+error_log
+
+# --- PHP Environment ---
+.env
+.env.local
+
+# --- Compiled / Cache ---
+*.cache
+/cache/

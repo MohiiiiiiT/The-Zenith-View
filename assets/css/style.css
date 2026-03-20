@@ -1,0 +1,2253 @@
+/* =============================================================================
+   THE ZENITH VIEW — /assets/css/style.css
+   v2.0 | Top-1% Professional SaaS Aesthetic | KJSCE Brand
+   
+   TABLE OF CONTENTS
+   -----------------
+   01. Google Fonts Import (Inter)
+   02. CSS Variables — Light Mode
+   03. CSS Variables — Dark Mode
+   04. Base & Reset
+   05. Announcement Bar (Slim Ticker)
+   06. Glass Navbar
+   07. Hamburger Button (Animated)
+   08. Mobile Drawer
+   09. Hero Section
+   10. Section: Leaderboard Preview
+   11. Section: Feature Cards
+   12. Section: CTA Banner
+   13. Footer (4-column)
+   14. Back To Top Button
+   15. Utility & Shared Components
+   16. Animations & Transitions
+============================================================================= */
+
+
+/* =============================================================================
+   01. GOOGLE FONTS — Inter (400–800 weight range)
+============================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700;900&display=swap');
+
+
+/* =============================================================================
+   02. CSS VARIABLES — Light Mode (KJSCE Official Brand Palette)
+============================================================================= */
+:root {
+    /* --- Backgrounds --- */
+    --bg-main:             #F4F6F9;
+    --bg-card:             #FFFFFF;
+    --bg-subtle:           #F8F9FB;
+
+    /* --- Typography --- */
+    --text-primary:        #212529;
+    --text-heading:        #004466;      /* Deep Trust Blue — all headings */
+    --text-secondary:      #58595B;
+    --text-muted:          #8C9097;
+
+    /* --- Brand Accents --- */
+    --accent-primary:      #B7202E;      /* Power Red */
+    --accent-primary-rgb:  183, 32, 46;
+    --accent-primary-hover:#9A1925;
+    --accent-secondary:    #004466;      /* Deep Trust Blue */
+    --accent-secondary-rgb:0, 68, 102;
+    --accent-secondary-hover: #003355;
+
+    /* --- Borders & Elevation --- */
+    --border-color:        #E9ECEF;
+    --border-subtle:       #F0F2F5;
+    --card-shadow:         0 10px 40px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover:   0 20px 60px rgba(0, 0, 0, 0.13);
+
+    /* --- Navbar (Glass) --- */
+    --navbar-bg:           rgba(255, 255, 255, 0.82);
+    --navbar-blur:         blur(14px);
+    --navbar-border:       1px solid rgba(0, 0, 0, 0.05);
+    --navbar-height:       68px;
+
+    /* --- Announcement Bar --- */
+    --ann-bg:              #004466;
+    --ann-text:            #FFFFFF;
+    --ann-height:          32px;
+
+    /* --- Footer --- */
+    --footer-bg:           #001E2E;
+    --footer-border:       #B7202E;
+
+    /* --- Misc --- */
+    --border-radius:       8px;         /* ↑ 6→8: matches login card's 8px input/button radius */
+    --border-radius-lg:    12px;        /* ↑ 10→12: matches login card's inner elements */
+    --border-radius-xl:    20px;        /* ↑ 16→20: matches login card's outer radius */
+    --transition-speed:    0.3s;
+    --transition:          0.3s ease-in-out;
+    --font-family:         'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display:        'DM Sans', 'Inter', -apple-system, sans-serif; /* login headline font */
+
+    /* Elevated card shadows — restrained, SaaS-grade elevation */
+    --card-shadow:         0 4px 20px rgba(0,0,0,0.06), 0 1px 6px rgba(0,0,0,0.03);
+    --card-shadow-hover:   0 8px 28px rgba(0,0,0,0.09), 0 2px 8px rgba(0,0,0,0.04);
+    --card-inset-light:    inset 0 1px 0 rgba(255,255,255,0.8); /* inner top-edge highlight */
+}
+
+
+/* =============================================================================
+   03. CSS VARIABLES — Dark Mode
+   Activated via data-theme="dark" on <body> (set by flash-prevention script)
+============================================================================= */
+[data-theme="dark"] {
+    --bg-main:             #121416;
+    --bg-card:             #1C1F23;
+    --bg-subtle:           #15181C;
+
+    --text-primary:        #E9ECEF;
+    --text-heading:        #72C0DC;
+    --text-secondary:      #ADB5BD;
+    --text-muted:          #6A7280;
+
+    --accent-primary:      #ED1C24;
+    --accent-primary-rgb:  237, 28, 36;
+    --accent-primary-hover:#CC1820;
+    --accent-secondary:    #00334D;
+    --accent-secondary-rgb:0, 51, 77;
+    --accent-secondary-hover: #002640;
+
+    --border-color:        #2B3035;
+    --border-subtle:       #20252C;
+    --card-shadow:         none;
+    --card-shadow-hover:   none;
+
+    --navbar-bg:           rgba(28, 31, 35, 0.88);
+    --navbar-border:       1px solid rgba(255, 255, 255, 0.06);
+
+    --ann-bg:              #001A2B;
+    --ann-text:            #C8D8E4;
+
+    --footer-bg:           #090C10;
+}
+
+
+/* =============================================================================
+   04. BASE & RESET
+============================================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior:    smooth;
+    scroll-padding-top: calc(var(--navbar-height) + var(--ann-height) + 16px);
+    /* FIX 1: Prevent any child element from causing horizontal overflow */
+    overflow-x:         hidden !important;
+    box-sizing:         border-box;
+}
+
+body {
+    font-family:             var(--font-family);
+    font-size:               1rem;
+    font-weight:             400;
+    line-height:             1.65;
+    color:                   var(--text-primary);
+    background-color:        var(--bg-main);
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition:              background-color var(--transition), color var(--transition);
+    overflow-x:              hidden !important;
+    box-sizing:              border-box;
+    max-width:               100vw;
+    /* STICKY FOOTER: body is a full-height flex column.
+       .page-main grows to fill space, pushing footer to bottom on short pages. */
+    display:                 flex;
+    flex-direction:          column;
+    min-height:              100dvh;
+}
+
+/* Flex child that holds all page content between navbar and footer.
+   flex:1 means it expands to consume any leftover vertical space. */
+.page-main {
+    flex:    1;
+    display: block;
+    width:   100%;
+}
+
+/* Bootstrap's .row negative margins and .container max-widths are intentional
+   and must NOT be overridden — doing so breaks the centred grid on desktop.
+   overflow-x: hidden on html/body above is sufficient to contain any bleed
+   without touching Bootstrap's layout internals. */
+
+/* All headings: DM Sans (display font) heavy, Deep Blue, tight tracking — mirrors login .card-title */
+h1, h2, h3, h4, h5, h6 {
+    font-family:    var(--font-display);
+    font-weight:    800;
+    line-height:    1.2;
+    color:          var(--text-heading);
+    letter-spacing: -0.025em;
+    margin-bottom:  0;
+    transition:     color var(--transition);
+}
+
+a {
+    color:           var(--accent-primary);
+    text-decoration: none;
+    transition:      color var(--transition), opacity var(--transition);
+}
+
+a:hover {
+    color:           var(--accent-primary-hover);
+    text-decoration: underline;
+}
+
+img { max-width: 100%; height: auto; }
+
+p { margin-bottom: 0; }
+
+/* Focus ring — KJSCE red, visible, consistent */
+:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius:  3px;
+}
+
+
+/* =============================================================================
+   05. ANNOUNCEMENT BAR (Slim Ticker)
+   Sits above the navbar. 32px, Deep Blue, 12-13px text.
+============================================================================= */
+.announcement-bar {
+    position:         relative;
+    background-color: var(--ann-bg);
+    color:            var(--ann-text);
+    height:           var(--ann-height);
+    display:          flex;
+    align-items:      stretch;
+    overflow:         hidden;
+    transition:       background-color var(--transition);
+    /* When dismissed (JS adds .ann-hidden), slide up */
+    max-height:       var(--ann-height);
+    transition:
+        max-height 0.4s ease,
+        opacity    0.35s ease,
+        background-color var(--transition);
+}
+
+.announcement-bar.ann-hidden {
+    max-height: 0;
+    opacity:    0;
+    pointer-events: none;
+    overflow:   hidden;
+}
+
+.announcement-label {
+    background-color: var(--accent-primary);
+    color:            #fff;
+    font-size:        0.65rem;
+    font-weight:      700;
+    letter-spacing:   0.12em;
+    text-transform:   uppercase;
+    padding:          0 0.9rem;
+    display:          flex;
+    align-items:      center;
+    gap:              0.4rem;
+    flex-shrink:      0;
+    white-space:      nowrap;
+}
+
+.ann-dot {
+    width:            6px;
+    height:           6px;
+    background:       rgba(255,255,255,0.9);
+    border-radius:    50%;
+    animation:        pulse-dot 1.8s ease-in-out infinite;
+    flex-shrink:      0;
+}
+
+.announcement-track-wrapper {
+    flex:     1;
+    overflow: hidden;
+    position: relative;
+    display:  flex;
+    align-items: center;
+}
+
+/* Edge fade */
+.announcement-track-wrapper::before,
+.announcement-track-wrapper::after {
+    content:       '';
+    position:      absolute;
+    top: 0; bottom: 0;
+    width:         40px;
+    z-index:       1;
+    pointer-events: none;
+}
+.announcement-track-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, var(--ann-bg), transparent);
+}
+.announcement-track-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, var(--ann-bg), transparent);
+}
+
+.announcement-track {
+    display:     inline-flex;
+    align-items: center;
+    animation:   ticker-scroll 55s linear infinite;
+    will-change: transform;
+    white-space: nowrap;
+}
+
+.announcement-track:hover { animation-play-state: paused; }
+
+@keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* Individual ticker items */
+.ticker-item {
+    font-size:   0.78rem;
+    font-weight: 400;
+    padding:     0 1.4rem;
+    color:       rgba(255, 255, 255, 0.82);
+    line-height: 1;
+}
+
+.ticker-icon {
+    color:        #FBBF24;
+    margin-right: 0.3rem;
+    font-size:    0.7rem;
+}
+
+.ticker-badge {
+    display:          inline-block;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius:    3px;
+    padding:          1px 5px;
+    font-size:        0.68rem;
+    font-weight:      600;
+    margin-left:      0.35rem;
+    color:            #FBBF24;
+    letter-spacing:   0.02em;
+}
+
+.ticker-separator {
+    color:          rgba(255, 255, 255, 0.2);
+    font-size:      0.3rem;
+    vertical-align: middle;
+}
+
+/* Dismiss button */
+.announcement-close {
+    background:    none;
+    border:        none;
+    color:         rgba(255, 255, 255, 0.45);
+    padding:       0 0.75rem;
+    cursor:        pointer;
+    font-size:     0.9rem;
+    display:       flex;
+    align-items:   center;
+    flex-shrink:   0;
+    transition:    color var(--transition);
+}
+
+.announcement-close:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* =============================================================================
+   06. GLASS NAVBAR
+============================================================================= */
+.navbar-glass {
+    background:    var(--navbar-bg);
+    backdrop-filter: var(--navbar-blur);
+    -webkit-backdrop-filter: var(--navbar-blur);
+    border-bottom: var(--navbar-border);
+    min-height:    var(--navbar-height);
+    padding-top:   0;
+    padding-bottom:0;
+    transition:
+        background var(--transition),
+        border-color var(--transition);
+    z-index: 1030;
+}
+
+/* Scrolled state — slightly more opaque */
+.navbar-glass.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="dark"] .navbar-glass.scrolled {
+    background: rgba(28, 31, 35, 0.98);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Brand */
+.navbar-brand {
+    display:     flex;
+    align-items: center;
+    gap:         0.6rem;
+    text-decoration: none;
+    padding:     0;
+}
+
+/* ---- Brand Logo Mark — Solid Red Container (matches login panel brand icon) ----
+   Gradient lifts the flat color, inset top-edge highlight echoes the login card's
+   glass system. Both navbar and drawer use this class. */
+.brand-logo-mark {
+    width:            38px;
+    height:           38px;
+    background:       linear-gradient(145deg, var(--accent-primary) 0%, #C52030 100%);
+    color:            #fff;
+    border-radius:    10px;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        1.05rem;
+    flex-shrink:      0;
+    box-shadow:
+        0 2px 8px rgba(var(--accent-primary-rgb), 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22); /* inner top-edge highlight — login card system */
+    transition:
+        background   var(--transition),
+        transform    var(--transition),
+        box-shadow   var(--transition);
+}
+
+.navbar-brand:hover .brand-logo-mark {
+    background:  linear-gradient(145deg, var(--accent-primary-hover) 0%, #A01825 100%);
+    transform:   scale(0.94);
+    box-shadow:
+        0 3px 12px rgba(var(--accent-primary-rgb), 0.30),
+        inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.brand-name {
+    display:       block;
+    font-family:   var(--font-display);
+    font-size:     1rem;
+    font-weight:   800;
+    color:         var(--accent-primary);
+    letter-spacing:-0.03em;
+    line-height:   1.15;
+    transition:    color var(--transition);
+}
+
+.brand-subtitle {
+    display:       block;
+    font-size:     0.6rem;
+    font-weight:   500;
+    color:         var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height:   1;
+    margin-top:    1px;
+}
+
+/* Desktop Nav Links */
+.navbar-nav-desktop {
+    list-style: none;
+    margin:     0;
+    padding:    0;
+}
+
+.navbar-nav-desktop .nav-link {
+    font-size:     0.86rem;
+    font-weight:   500;
+    color:         var(--text-secondary);
+    padding:       0.42rem 0.8rem;
+    border-radius: var(--border-radius);
+    transition:
+        color            var(--transition),
+        background-color var(--transition);
+}
+
+.navbar-nav-desktop .nav-link:hover,
+.navbar-nav-desktop .nav-link.active {
+    color:            var(--accent-primary);
+    background-color: rgba(var(--accent-primary-rgb), 0.07);
+    text-decoration:  none;
+}
+
+/* Theme Toggle Button (shared desktop + mobile) */
+.theme-btn {
+    background:     none;
+    border:         1px solid var(--border-color);
+    color:          var(--text-muted);
+    border-radius:  50%;
+    width:          36px;
+    height:         36px;
+    display:        flex;
+    align-items:    center;
+    justify-content:center;
+    font-size:      0.92rem;
+    cursor:         pointer;
+    padding:        0;
+    flex-shrink:    0;
+    transition:
+        color            var(--transition),
+        border-color     var(--transition),
+        background-color var(--transition);
+}
+
+.theme-btn:hover {
+    color:            var(--accent-primary);
+    border-color:     var(--accent-primary);
+    background-color: rgba(var(--accent-primary-rgb), 0.06);
+}
+
+/* =============================================================================
+   NAVBAR — Desktop User Pill  (replaces legacy .nav-user-greeting)
+============================================================================= */
+.nav-user-pill {
+    display:          flex;
+    align-items:      center;
+    gap:              0.55rem;
+    padding:          0.28rem 0.75rem 0.28rem 0.28rem;
+    background-color: rgba(var(--accent-secondary-rgb), 0.07);
+    border:           1px solid rgba(var(--accent-secondary-rgb), 0.14);
+    border-radius:    50px;
+    cursor:           default;
+    transition:
+        background-color var(--transition),
+        border-color     var(--transition);
+}
+
+.nav-user-pill:hover {
+    background-color: rgba(var(--accent-secondary-rgb), 0.13);
+    border-color:     rgba(var(--accent-secondary-rgb), 0.24);
+}
+
+/* Initials avatar circle inside pill */
+.nav-user-avatar {
+    width:            30px;
+    height:           30px;
+    border-radius:    50%;
+    background:       linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+    color:            #fff;
+    font-size:        0.63rem;
+    font-weight:      700;
+    letter-spacing:   0.04em;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    flex-shrink:      0;
+    user-select:      none;
+}
+
+/* Text stack inside pill */
+.nav-user-info {
+    display:        flex;
+    flex-direction: column;
+    line-height:    1.15;
+}
+
+.nav-user-name {
+    font-size:   0.8rem;
+    font-weight: 600;
+    color:       var(--text-primary);
+    white-space: nowrap;
+    transition:  color var(--transition);
+}
+
+.nav-user-role {
+    font-size:      0.6rem;
+    font-weight:    600;
+    color:          var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space:    nowrap;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .nav-user-pill {
+    background-color: rgba(var(--accent-secondary-rgb), 0.20);
+    border-color:     rgba(var(--accent-secondary-rgb), 0.32);
+}
+[data-theme="dark"] .nav-user-pill:hover {
+    background-color: rgba(var(--accent-secondary-rgb), 0.28);
+    border-color:     rgba(var(--accent-secondary-rgb), 0.44);
+}
+
+/* Navbar CTA Buttons — mirrors login .btn-submit: gradient, 12px radius, shine sweep, 700 weight */
+.btn-nav-cta {
+    font-size:        0.83rem;
+    font-weight:      700;
+    padding:          0.48rem 1.2rem;
+    background:       linear-gradient(135deg,
+                          var(--accent-primary) 0%,
+                          #D42535 100%
+                      );
+    color:            #fff;
+    border-radius:    12px;            /* exact match: login btn-submit border-radius */
+    border:           none;
+    text-decoration:  none;
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.35rem;
+    white-space:      nowrap;
+    position:         relative;
+    overflow:         hidden;
+    box-shadow:       0 2px 8px rgba(var(--accent-primary-rgb), 0.18);
+    transition:
+        transform    0.15s ease,
+        box-shadow   var(--transition);
+}
+
+/* Shine sweep — identical to login's btn-submit::after */
+.btn-nav-cta::after {
+    content:    '';
+    position:   absolute;
+    top: 0; left: -100%;
+    width:      60%;
+    height:     100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.45s ease;
+}
+
+.btn-nav-cta:hover {
+    transform:       translateY(-1px);
+    box-shadow:      0 4px 14px rgba(var(--accent-primary-rgb), 0.24);
+    text-decoration: none;
+    color:           #fff;
+}
+
+.btn-nav-cta:hover::after {
+    left: 150%;
+}
+
+.btn-nav-cta:active {
+    transform:  translateY(0);
+    box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.22);
+}
+
+.btn-nav-cta.btn-nav-outline {
+    background:   transparent;
+    color:        var(--text-secondary);
+    border:       1.5px solid var(--border-color);
+    box-shadow:   none;
+}
+
+.btn-nav-cta.btn-nav-outline::after { display: none; }
+
+.btn-nav-cta.btn-nav-outline:hover {
+    border-color: var(--accent-primary);
+    color:        var(--accent-primary);
+    box-shadow:   none;
+    transform:    none;
+}
+
+
+/* =============================================================================
+   07. HAMBURGER BUTTON (Custom Animated — 3 lines morph to X)
+============================================================================= */
+.hamburger {
+    background:  none;
+    border:      1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    width:       40px;
+    height:      40px;
+    cursor:      pointer;
+    padding:     0;
+    display:     flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:         5px;
+    flex-shrink: 0;
+    transition:  border-color var(--transition);
+}
+
+.hamburger:hover {
+    border-color: var(--accent-primary);
+}
+
+.hamburger-line {
+    display:          block;
+    width:            18px;
+    height:           1.8px;
+    background-color: var(--text-secondary);
+    border-radius:    2px;
+    transform-origin: center;
+    transition:
+        transform        0.3s ease-in-out,
+        opacity          0.2s ease-in-out,
+        background-color var(--transition),
+        width            0.2s ease-in-out;
+}
+
+/* Morphed X state (toggled by JS class .is-open on the button) */
+.hamburger.is-open .hamburger-line.top {
+    transform: translateY(6.8px) rotate(45deg);
+}
+
+.hamburger.is-open .hamburger-line.mid {
+    opacity: 0;
+    width:   0;
+}
+
+.hamburger.is-open .hamburger-line.bot {
+    transform: translateY(-6.8px) rotate(-45deg);
+}
+
+
+/* =============================================================================
+   08. MOBILE DRAWER
+   Slides in from the right. Full-height overlay panel.
+============================================================================= */
+
+/* Backdrop overlay */
+.drawer-overlay {
+    position:   fixed;
+    inset:      0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index:    1040;
+    opacity:    0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.drawer-overlay.is-visible {
+    opacity:        1;
+    pointer-events: all;
+}
+
+/* Drawer panel */
+.mobile-drawer {
+    position:         fixed;
+    top:              0;
+    right:            0;
+    /* Use 100dvh so the drawer fills the true visual viewport on mobile,
+       accounting for browser chrome (address bar) correctly */
+    height:           100dvh;
+    width:            min(320px, 88vw);
+    background-color: var(--bg-card);
+    z-index:          1050;
+    /* Strict flex column: header / nav(flex:1) / footer — footer always pinned */
+    display:          flex;
+    flex-direction:   column;
+    box-shadow:       -8px 0 40px rgba(0, 0, 0, 0.18);
+    transform:        translateX(100%);
+    visibility:       hidden;
+    transition:       transform   0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                      visibility  0s linear 0.32s,
+                      background-color var(--transition);
+    /* overflow:hidden is removed — drawer-nav handles its own scroll */
+}
+
+.mobile-drawer.is-open {
+    transform:  translateX(0);
+    visibility: visible;
+    transition: transform   0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                visibility  0s linear 0s,
+                background-color var(--transition);
+}
+
+/* Drawer Header */
+.drawer-header {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         1.1rem 1.25rem;
+    border-bottom:   1px solid var(--border-color);
+    flex-shrink:     0;
+}
+
+.drawer-brand {
+    font-size:     0.95rem;
+    font-weight:   700;
+    color:         var(--text-primary);
+    display:       flex;
+    align-items:   center;
+    letter-spacing: -0.01em;
+}
+
+.drawer-close {
+    background:    none;
+    border:        1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color:         var(--text-muted);
+    width:         32px;
+    height:        32px;
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    cursor:        pointer;
+    font-size:     1rem;
+    padding:       0;
+    transition:
+        color            var(--transition),
+        border-color     var(--transition),
+        background-color var(--transition);
+}
+
+.drawer-close:hover {
+    background-color: rgba(var(--accent-primary-rgb), 0.08);
+    border-color:     var(--accent-primary);
+    color:            var(--accent-primary);
+}
+
+/* drawer-nav: flex:1 + overflow-y:auto = fills all height between header and footer,
+   scrolls internally if nav links exceed the space. Footer is never pushed off-screen. */
+.drawer-nav {
+    flex:       1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding:    0.75rem 0.75rem 0;
+    /* Prevent nav from ever pushing footer off-screen */
+    min-height: 0;
+}
+
+.drawer-nav ul {
+    list-style: none;
+    margin:     0;
+    padding:    0;
+}
+
+.drawer-link {
+    display:      flex;
+    align-items:  center;
+    gap:          0.7rem;
+    padding:      0.7rem 0.9rem;
+    border-radius: var(--border-radius);
+    font-size:    0.9rem;
+    font-weight:  500;
+    color:        var(--text-secondary);
+    text-decoration: none;
+    transition:
+        background-color var(--transition),
+        color            var(--transition);
+}
+
+.drawer-link:hover,
+.drawer-link.active {
+    background-color: rgba(var(--accent-primary-rgb), 0.07);
+    color:            var(--accent-primary);
+    text-decoration:  none;
+}
+
+.drawer-divider {
+    height:     1px;
+    background: var(--border-color);
+    margin:     0.6rem 0.9rem;
+}
+
+/* Drawer brand logo mark — slightly smaller than main navbar's 38px */
+.drawer-brand-mark {
+    width:       30px !important;
+    height:      30px !important;
+    font-size:   0.85rem !important;
+    border-radius: 8px !important;
+}
+
+/* drawer-footer: flex-shrink:0 prevents compression; margin-top:auto is a
+   belt-and-braces push to the bottom even if flex:1 on nav isn't enough
+   (e.g. very short nav lists on tall screens). Button is always visible. */
+.drawer-footer {
+    padding:        1rem 1.25rem 1.5rem;
+    border-top:     1px solid var(--border-color);
+    flex-shrink:    0;
+    margin-top:     auto;
+    display:        flex;
+    flex-direction: column;
+    gap:            0.6rem;
+}
+
+/* =============================================================================
+   MOBILE DRAWER — Footer User Pill + Logout Button
+   (replaces legacy .drawer-user)
+============================================================================= */
+.drawer-user-pill {
+    display:          flex;
+    align-items:      center;
+    gap:              0.7rem;
+    padding:          0.65rem 0.8rem;
+    background-color: rgba(var(--accent-secondary-rgb), 0.06);
+    border:           1px solid var(--border-color);
+    border-radius:    var(--border-radius);
+    transition:
+        background-color var(--transition),
+        border-color     var(--transition);
+}
+
+[data-theme="dark"] .drawer-user-pill {
+    background-color: rgba(var(--accent-secondary-rgb), 0.16);
+    border-color:     var(--border-color);
+}
+
+/* Initials avatar — larger than desktop for comfortable touch */
+.drawer-user-avatar {
+    width:       38px;
+    height:      38px;
+    border-radius: 50%;
+    background:  linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+    color:       #fff;
+    font-size:   0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.drawer-user-info {
+    display:        flex;
+    flex-direction: column;
+    line-height:    1.25;
+    min-width:      0; /* allows text-overflow: ellipsis to work in flex */
+}
+
+.drawer-user-name {
+    font-size:     0.88rem;
+    font-weight:   600;
+    color:         var(--text-primary);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    transition:    color var(--transition);
+}
+
+.drawer-user-role {
+    font-size:      0.63rem;
+    font-weight:    600;
+    color:          var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space:    nowrap;
+}
+
+/* Full-width logout button — red ghost style, fills to solid red on hover */
+.btn-drawer-logout {
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.5rem;
+    width:            100%;
+    padding:          0.65rem 1rem;
+    font-size:        0.86rem;
+    font-weight:      600;
+    color:            var(--accent-primary);
+    background-color: rgba(var(--accent-primary-rgb), 0.06);
+    border:           1.5px solid rgba(var(--accent-primary-rgb), 0.20);
+    border-radius:    var(--border-radius);
+    text-decoration:  none;
+    transition:
+        background-color var(--transition),
+        border-color     var(--transition),
+        color            var(--transition),
+        transform        0.15s ease;
+}
+
+.btn-drawer-logout:hover {
+    background-color: var(--accent-primary);
+    border-color:     var(--accent-primary);
+    color:            #fff;
+    text-decoration:  none;
+    transform:        translateY(-1px);
+}
+
+.btn-drawer-logout:active {
+    transform: translateY(0);
+}
+
+
+/* =============================================================================
+   09. HERO SECTION
+   Full-bleed dark architectural canvas — echoes the login page's left panel.
+   Deep Trust Blue base, geometric red accent shape, DM Sans display headline,
+   grid texture at 4% opacity. All content on white text for maximum contrast.
+   overflow:hidden is CRITICAL — it contains the absolute-positioned geometry
+   and the hero-grid-bg div without any horizontal scroll on mobile.
+============================================================================= */
+.hero-section {
+    background-color: var(--accent-secondary);  /* Deep Trust Blue #004466 */
+    position:         relative;
+    padding:          7rem 0 6rem;
+    overflow:         hidden;
+    /* No transition — this is always dark; dark mode doesn't need to change it */
+}
+
+/* ---- Geometric red slab — top right (mirrors login::before) ------------- */
+.hero-section::before {
+    content:    '';
+    position:   absolute;
+    top:        -10%;
+    right:      -12%;
+    width:      55%;
+    height:     130%;
+    background: var(--accent-primary);    /* Power Red #B7202E */
+    clip-path:  polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+    opacity:    0.75;
+    z-index:    0;
+    pointer-events: none;
+}
+
+/* ---- Subtle radial vignette over the red slab — adds depth -------------- */
+.hero-section::after {
+    content:    '';
+    position:   absolute;
+    top:        -10%;
+    right:      -12%;
+    width:      55%;
+    height:     130%;
+    background: radial-gradient(
+        ellipse at 60% 30%,
+        rgba(0,0,0,0.18) 0%,
+        transparent 65%
+    );
+    z-index:    0;
+    pointer-events: none;
+}
+
+/* ---- Grid texture (same system as login .left-grid) --------------------- */
+.hero-grid-bg {
+    position:       absolute;
+    inset:          0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.038) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.038) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events:  none;
+    z-index:         1;
+    /* Radial vignette keeps grid faint in the centre, visible at edges */
+    -webkit-mask-image: radial-gradient(ellipse at 35% 50%, transparent 25%, black 75%);
+    mask-image:         radial-gradient(ellipse at 35% 50%, transparent 25%, black 75%);
+}
+
+/* Content lives above geometry layers */
+.hero-section .container {
+    position: relative;
+    z-index:  2;
+}
+
+/* ---- Eyebrow row --------------------------------------------------------- */
+.hero-accent-bar {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.eyebrow-rule {
+    display:    inline-block;
+    width:      28px;
+    height:     2px;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    flex-shrink:0;
+}
+
+.hero-eyebrow {
+    font-family:    var(--font-display);
+    font-size:      0.65rem;
+    font-weight:    600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color:          rgba(255, 255, 255, 0.55);   /* matches login .eyebrow-text */
+}
+
+/* ---- Main headline ------------------------------------------------------- */
+.hero-title {
+    font-family:    var(--font-display);
+    font-size:      clamp(2.4rem, 5vw, 3.8rem);
+    font-weight:    900;
+    color:          #FFFFFF;
+    line-height:    1.0;
+    letter-spacing: -0.04em;
+    margin-bottom:  1.5rem;
+}
+
+.hero-title .highlight {
+    color: var(--accent-primary);   /* Power Red — legible on dark bg */
+}
+
+/* ---- Description --------------------------------------------------------- */
+.hero-description {
+    font-size:     0.9rem;
+    font-weight:   300;
+    color:         rgba(255, 255, 255, 0.5);     /* login .left-sub opacity */
+    line-height:   1.75;
+    max-width:     460px;
+    margin-bottom: 2rem;
+}
+
+/* ---- Mobile centering (structure PRESERVED — only text-align + margin) -- */
+@media (max-width: 991.98px) {
+    .hero-section {
+        padding: 5rem 0 4.5rem;
+        text-align: center;
+    }
+
+    .hero-description {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-cta-group {
+        justify-content: center;
+    }
+
+    .hero-stats {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-accent-bar {
+        justify-content: center;
+    }
+}
+
+/* ---- CTA button group ---------------------------------------------------- */
+.hero-cta-group {
+    display:       flex;
+    gap:           0.75rem;
+    flex-wrap:     wrap;
+    margin-bottom: 0;
+}
+
+/* Primary: full red gradient — login .btn-submit DNA */
+.btn-hero-primary {
+    background:     linear-gradient(135deg, var(--accent-primary) 0%, #D42535 100%);
+    color:          #fff;
+    font-weight:    700;
+    font-size:      0.92rem;
+    padding:        0.78rem 1.8rem;
+    border:         none;
+    border-radius:  12px;
+    text-decoration:none;
+    display:        inline-flex;
+    align-items:    center;
+    gap:            0.45rem;
+    letter-spacing: 0.01em;
+    position:       relative;
+    overflow:       hidden;
+    box-shadow:     0 3px 14px rgba(var(--accent-primary-rgb), 0.24);
+    transition:     transform 0.15s ease, box-shadow var(--transition);
+}
+
+.btn-hero-primary::after {
+    content:    '';
+    position:   absolute;
+    top: 0; left: -100%;
+    width:      60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-hero-primary:hover {
+    transform:       translateY(-2px);
+    box-shadow:      0 6px 22px rgba(var(--accent-primary-rgb), 0.32);
+    color:           #fff;
+    text-decoration: none;
+}
+.btn-hero-primary:hover::after { left: 150%; }
+.btn-hero-primary:active { transform: translateY(0); }
+
+/* Outline: ghost button on dark bg — white border, white text */
+.btn-hero-outline {
+    background-color: transparent;
+    color:            rgba(255,255,255,0.85);
+    font-weight:      600;
+    font-size:        0.92rem;
+    padding:          0.78rem 1.8rem;
+    border:           1.5px solid rgba(255,255,255,0.25);
+    border-radius:    12px;
+    text-decoration:  none;
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.45rem;
+    backdrop-filter:  blur(4px);
+    transition:
+        border-color     var(--transition),
+        color            var(--transition),
+        background-color var(--transition),
+        transform        0.15s ease;
+}
+
+.btn-hero-outline:hover {
+    border-color:     rgba(255,255,255,0.6);
+    color:            #fff;
+    background-color: rgba(255,255,255,0.07);
+    text-decoration:  none;
+    transform:        translateY(-2px);
+}
+
+/* Dark mode: hero is always dark, so no override needed */
+[data-theme="dark"] .btn-hero-outline {
+    color:        rgba(255,255,255,0.85);
+    border-color: rgba(255,255,255,0.25);
+}
+[data-theme="dark"] .btn-hero-outline:hover {
+    color:        #fff;
+    border-color: rgba(255,255,255,0.55);
+    background-color: rgba(255,255,255,0.07);
+}
+
+/* ---- Stats strip (mirrors login .left-stats) ----------------------------- */
+.hero-stats {
+    display:     flex;
+    border-top:  1px solid rgba(255,255,255,0.12);
+    padding-top: 2rem;
+    margin-top:  2.5rem;
+    max-width:   400px;
+    gap:         0;
+}
+
+.hero-stat-item {
+    flex:         1;
+    padding:      0 1.5rem 0 0;
+    border-right: 1px solid rgba(255,255,255,0.12);
+    text-align:   left;
+}
+
+.hero-stat-item:last-child  { border-right: none; padding-right: 0; }
+.hero-stat-item:not(:first-child) { padding-left: 1.5rem; }
+
+@media (max-width: 991.98px) {
+    .hero-stats {
+        max-width: 360px;
+    }
+    .hero-stat-item { text-align: center; }
+}
+
+.hero-stat-number {
+    display:        block;
+    font-family:    var(--font-display);
+    font-size:      2rem;
+    font-weight:    900;
+    color:          #ffffff;
+    line-height:    1;
+    margin-bottom:  0.2rem;
+    letter-spacing: -0.04em;
+}
+
+.hero-stat-label {
+    display:        block;
+    font-size:      0.63rem;
+    color:          rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight:    500;
+}
+
+/* ---- Right column: Live Rankings panel ----------------------------------- */
+/* Dark-glass treatment matching the login card but on a dark background */
+.hero-visual-panel {
+    background:       rgba(0, 20, 40, 0.55);
+    border:           1px solid rgba(255,255,255,0.1);
+    border-radius:    var(--border-radius-lg);
+    padding:          1.75rem;
+    position:         relative;
+    overflow:         hidden;
+    backdrop-filter:  blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+    transition: border-color var(--transition);
+}
+
+/* Top gradient accent stripe — same system as login .login-card::before */
+.hero-visual-panel::before {
+    content:       '';
+    position:      absolute;
+    top: 0; left: 0; right: 0;
+    height:        2px;
+    background:    linear-gradient(90deg,
+        var(--accent-secondary) 0%,
+        var(--accent-primary)   55%,
+        transparent             100%
+    );
+    opacity: 0.8;
+}
+
+/* Panel header */
+.panel-header {
+    font-size:      0.65rem;
+    font-weight:    600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color:          rgba(255,255,255,0.4);
+    margin-bottom:  1.1rem;
+    display:        flex;
+    align-items:    center;
+    gap:            0.5rem;
+}
+
+.live-dot {
+    width:            7px;
+    height:           7px;
+    background-color: #22c55e;
+    border-radius:    50%;
+    flex-shrink:      0;
+    animation:        pulse-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1;   transform: scale(1);   }
+    50%       { opacity: 0.4; transform: scale(0.65); }
+}
+
+/* Rank rows — glass pill style on dark panel */
+.mock-rank-row {
+    display:          flex;
+    align-items:      center;
+    gap:              0.8rem;
+    padding:          0.65rem 0.75rem;
+    border-radius:    var(--border-radius);
+    margin-bottom:    0.4rem;
+    border:           1px solid rgba(255,255,255,0.06);
+    background-color: rgba(255,255,255,0.04);
+    transition:       background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.mock-rank-row:first-of-type {
+    background-color: rgba(var(--accent-primary-rgb), 0.12);
+    border-color:     rgba(var(--accent-primary-rgb), 0.25);
+}
+
+.mock-rank-row:hover {
+    background-color: rgba(255,255,255,0.07);
+    border-color:     rgba(255,255,255,0.12);
+}
+
+.mock-rank-badge {
+    font-size:    0.75rem;
+    font-weight:  700;
+    color:        rgba(255,255,255,0.35);
+    width:        22px;
+    text-align:   center;
+    flex-shrink:  0;
+}
+.mock-rank-badge.top { color: #F59E0B; }
+
+.mock-avatar {
+    width:            30px;
+    height:           30px;
+    border-radius:    50%;
+    background-color: rgba(var(--accent-secondary-rgb), 0.25);
+    color:            var(--accent-primary);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        0.68rem;
+    font-weight:      700;
+    flex-shrink:      0;
+}
+
+.mock-name-dept { flex: 1; min-width: 0; }
+
+.mock-name {
+    display:       block;
+    font-size:     0.82rem;
+    font-weight:   600;
+    color:         rgba(255,255,255,0.88);
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+}
+
+.mock-dept {
+    display:   block;
+    font-size: 0.68rem;
+    color:     rgba(255,255,255,0.35);
+}
+
+.mock-pts {
+    font-size:   0.82rem;
+    font-weight: 700;
+    color:       var(--accent-primary);
+    flex-shrink: 0;
+}
+
+.panel-footer-link {
+    display:         block;
+    text-align:      right;
+    font-size:       0.73rem;
+    font-weight:     500;
+    color:           rgba(255,255,255,0.3);
+    margin-top:      0.9rem;
+    text-decoration: none;
+    transition:      color var(--transition);
+}
+.panel-footer-link:hover {
+    color:           rgba(255,255,255,0.7);
+    text-decoration: none;
+}
+
+
+/* =============================================================================
+   10. SECTION: LEADERBOARD PREVIEW
+   Clean white surface — deliberate contrast with the dark hero above.
+   The card uses the login's glass card shadow + accent stripe system.
+============================================================================= */
+.section-preview {
+    padding:          5.5rem 0;
+    background-color: var(--bg-main);
+    transition:       background-color var(--transition);
+}
+
+/* Shared eyebrow/title/subtitle across all sections */
+.section-eyebrow {
+    display:        block;
+    font-size:      0.65rem;
+    font-weight:    700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color:          var(--accent-primary);
+    margin-bottom:  0.4rem;
+}
+
+.section-title {
+    font-family:    var(--font-display);
+    font-size:      clamp(1.6rem, 3vw, 2.2rem);
+    font-weight:    900;
+    color:          var(--text-heading);
+    letter-spacing: -0.035em;
+    line-height:    1.1;
+    margin-bottom:  0.4rem;
+    transition:     color var(--transition);
+}
+
+.section-subtitle {
+    font-size:  0.88rem;
+    color:      var(--text-secondary);
+    margin:     0;
+    line-height:1.65;
+    transition: color var(--transition);
+}
+
+/* Card: same construction as login .login-card */
+.zv-card {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    var(--border-radius-xl);
+    box-shadow:       var(--card-shadow), var(--card-inset-light);
+    overflow:         hidden;
+    position:         relative;
+    transition:
+        background-color var(--transition),
+        border-color     var(--transition),
+        box-shadow       var(--transition);
+}
+
+/* Gradient accent stripe — login card ::before system */
+.zv-card::before {
+    content:       '';
+    position:      absolute;
+    top: 0; left: 0; right: 0;
+    height:        2px;
+    background:    linear-gradient(90deg,
+        var(--accent-secondary) 0%,
+        var(--accent-primary)   60%,
+        transparent             100%
+    );
+    opacity: 0.7;
+    z-index: 1;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .zv-card {
+    box-shadow:   none;
+    border-color: var(--border-color);
+}
+
+.zv-card:hover {
+    box-shadow: var(--card-shadow-hover), var(--card-inset-light);
+}
+[data-theme="dark"] .zv-card:hover { box-shadow: none; }
+
+/* Table */
+.zv-table {
+    color:         var(--text-primary);
+    margin-bottom: 0;
+    font-size:     0.88rem;
+}
+
+.zv-table thead th {
+    background-color: var(--accent-secondary);
+    color:            #FFFFFF;
+    font-size:        0.7rem;
+    font-weight:      600;
+    letter-spacing:   0.09em;
+    text-transform:   uppercase;
+    padding:          0.9rem 1.15rem;
+    border:           none;
+    white-space:      nowrap;
+}
+
+.zv-table tbody tr {
+    border-color: var(--border-color);
+    transition:   background-color var(--transition);
+}
+
+.zv-table tbody tr:hover {
+    background-color: rgba(var(--accent-secondary-rgb), 0.03);
+}
+
+[data-theme="dark"] .zv-table tbody tr:hover {
+    background-color: rgba(255,255,255,0.025);
+}
+
+[data-theme="dark"] .zv-table,
+[data-theme="dark"] .zv-table > :not(caption) > * > * {
+    background-color: var(--bg-card) !important;
+    color:            var(--text-primary) !important;
+    border-color:     var(--border-color) !important;
+}
+
+[data-theme="dark"] .zv-table thead th {
+    background-color: var(--accent-secondary) !important;
+    color:            #FFFFFF !important;
+    border-color:     transparent !important;
+}
+
+[data-theme="dark"] .zv-table tbody tr:hover > td,
+[data-theme="dark"] .zv-table tbody tr:hover > th {
+    background-color: rgba(255,255,255,0.03) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(255,255,255,0.02) !important;
+    color:            var(--text-primary) !important;
+}
+
+.zv-table tbody td {
+    padding:        0.85rem 1.15rem;
+    vertical-align: middle;
+    color:          var(--text-primary);
+    border-color:   var(--border-color);
+    transition:     color var(--transition), border-color var(--transition);
+}
+
+.rank-medal  { font-size: 1.1rem; }
+.rank-number { font-size: 0.88rem; font-weight: 700; color: var(--text-muted); }
+
+.dept-badge {
+    display:          inline-block;
+    font-size:        0.68rem;
+    font-weight:      600;
+    padding:          0.2rem 0.6rem;
+    border-radius:    4px;
+    background-color: rgba(var(--accent-secondary-rgb), 0.08);
+    color:            var(--accent-secondary);
+    letter-spacing:   0.02em;
+    transition:       background-color var(--transition), color var(--transition);
+}
+
+[data-theme="dark"] .dept-badge {
+    background-color: rgba(var(--accent-secondary-rgb), 0.22);
+    color:            var(--text-heading);
+}
+
+.year-badge {
+    font-size:   0.75rem;
+    font-weight: 500;
+    color:       var(--text-muted);
+}
+
+.points-cell {
+    font-weight:    700;
+    color:          var(--accent-primary);
+    font-size:      0.93rem;
+    letter-spacing: -0.01em;
+    transition:     color var(--transition);
+}
+
+/* =============================================================================
+   MOBILE TABLE REFINEMENTS (≤768px)
+   Targets the leaderboard .zv-table on small screens only.
+   On mobile, Bootstrap hides cols 3 & 4 (d-none d-sm-table-cell /
+   d-none d-md-table-cell), leaving exactly 3 visible columns:
+     Col 1 — Rank    (nth-child 1)  → center-aligned, fixed narrow width
+     Col 2 — Name    (nth-child 2)  → left-aligned, wraps naturally
+     Col 5 — Score   (nth-child 5 in DOM) → right-aligned, nowrap
+   All overrides use !important to beat Bootstrap's table specificity.
+   TRUNCATION NOTE: max-width:0 + white-space:nowrap was removed — the table
+   now uses normal auto layout so all text is fully readable on mobile.
+============================================================================= */
+@media (max-width: 768px) {
+
+    /* 1. CARD: slightly softer radius at narrow widths */
+    .zv-card {
+        border-radius: var(--border-radius-lg) !important;
+    }
+
+    /* 2. HEADER CELLS — reduced padding; allow wrapping so full text shows */
+    .zv-table thead th {
+        padding:        0.7rem 0.5rem !important;
+        font-size:      0.62rem !important;
+        letter-spacing: 0.06em !important;
+        white-space:    normal !important;   /* was nowrap — caused "STUDENT..." truncation */
+    }
+
+    /* 3. DATA CELLS — reduced padding, slightly smaller font */
+    .zv-table tbody td {
+        padding:   0.75rem 0.5rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* 4. RANK column — centered, fixed narrow width */
+    .zv-table thead th:nth-child(1),
+    .zv-table tbody td:nth-child(1) {
+        text-align:    center !important;
+        width:         46px !important;
+        padding-left:  0.35rem !important;
+        padding-right: 0.35rem !important;
+    }
+
+    /* 5. NAME column — left-aligned, full text, natural wrapping
+          max-width:0 + overflow:hidden removed — was the root cause of ellipsis */
+    .zv-table thead th:nth-child(2),
+    .zv-table tbody td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    /* Student name <span> — allow normal wrapping, keep weight */
+    .zv-table tbody td:nth-child(2) span {
+        display:    block;
+        font-size:  0.82rem;
+        font-weight:600;
+        white-space:normal;               /* explicitly allow wrap */
+        word-break: break-word;           /* prevent very long names overflowing */
+    }
+
+    /* 6. SCORE column — right-aligned, no wrap (numbers should never break) */
+    .zv-table thead th:nth-child(5),
+    .zv-table tbody td:nth-child(5) {
+        text-align:    right !important;
+        white-space:   nowrap !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* 7. Rank medals & numbers — scale down for tighter cells */
+    .rank-medal  { font-size: 1rem; }
+    .rank-number { font-size: 0.82rem; }
+
+    /* 8. Points cell */
+    .points-cell { font-size: 0.86rem !important; }
+
+    /* -------------------------------------------------------------------------
+       PATCH A — VERTICAL DEAD SPACE
+       Root cause: hero bottom padding (4.5rem) + section-preview top padding
+       (5.5rem) compound into ~180px of dark/light void on mobile.
+       Fix: shrink hero bottom padding and section-preview top padding at ≤768px.
+       These are padding overrides only — no flex, grid, or margin changes.
+    -------------------------------------------------------------------------- */
+    .hero-section {
+        padding-bottom: 2.5rem !important;  /* was 4.5rem from the 991px breakpoint */
+    }
+
+    .section-preview {
+        padding-top: 2.5rem !important;     /* was 5.5rem — cuts the void by ~half */
+    }
+
+    /* -------------------------------------------------------------------------
+       PATCH B — COLUMN WIDTH DISTRIBUTION (4 visible columns)
+       Dept column is now always visible on mobile (d-sm-table-cell removed).
+       Year column (nth-child 4) stays hidden via d-md-table-cell.
+       nth-child targets DOM position — Score remains nth-child(5) even with
+       Year hidden, because hidden elements still occupy their DOM slot.
+
+       Width budget on a 375px phone (~343px usable after container padding):
+         Rank  — 12%  (~41px)  medal/number — tight but centered
+         Name  — 42%  (~144px) primary content — fits most names
+         Dept  — 26%  (~89px)  badge values: "Comps","EXTC","Mech" — all short
+         Score — 20%  (~69px)  right-aligned number, no wrap needed
+       Total = 100%
+    -------------------------------------------------------------------------- */
+    .zv-table {
+        table-layout: fixed !important;
+        width:        100% !important;
+    }
+
+    /* Rank */
+    .zv-table thead th:nth-child(1),
+    .zv-table tbody td:nth-child(1) {
+        width: 12% !important;
+    }
+
+    /* Name */
+    .zv-table thead th:nth-child(2),
+    .zv-table tbody td:nth-child(2) {
+        width: 42% !important;
+    }
+
+    /* Department — now visible at all mobile sizes */
+    .zv-table thead th:nth-child(3),
+    .zv-table tbody td:nth-child(3) {
+        width:      26% !important;
+        text-align: left !important;
+    }
+
+    /* Score (5th in DOM — Year col at nth-child 4 is hidden but still counted) */
+    .zv-table thead th:nth-child(5),
+    .zv-table tbody td:nth-child(5) {
+        width: 20% !important;
+    }
+
+    /* dept-badge: trim horizontal padding on mobile so the pill fits the column */
+    .dept-badge {
+        padding:   0.15rem 0.35rem !important;
+        font-size: 0.62rem !important;
+    }
+
+}
+
+.view-all-link {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             0.3rem;
+    font-size:       0.84rem;
+    font-weight:     600;
+    color:           var(--accent-secondary);
+    text-decoration: none;
+    transition:      color var(--transition);
+}
+.view-all-link:hover { color: var(--accent-primary); text-decoration: none; }
+[data-theme="dark"] .view-all-link { color: var(--text-heading); }
+
+
+/* =============================================================================
+   11. SECTION: FEATURE CARDS (How It Works)
+   Dark architectural zone — deep blue canvas like the login left panel.
+   White typography, red accent step numbers, glass-style cards.
+============================================================================= */
+.section-features {
+    padding:    5.5rem 0;
+    background: #002233;                 /* Deep navy — darkened tint of var(--accent-secondary) for visual rhythm */
+    position:   relative;
+    overflow:   hidden;
+    /* No transition — always dark zone, dark mode doesn't alter it */
+}
+
+/* Geometric grid texture — continuous with the hero's language */
+.section-features::before {
+    content:    '';
+    position:   absolute;
+    inset:      0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events:  none;
+    z-index:         0;
+}
+
+/* Angular red accent — bottom right corner, decorative geometry */
+.section-features::after {
+    content:    '';
+    position:   absolute;
+    bottom:     -20%;
+    right:      -8%;
+    width:      35%;
+    height:     80%;
+    background: var(--accent-primary);
+    clip-path:  polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+    opacity:    0.06;
+    pointer-events: none;
+    z-index:    0;
+}
+
+/* Section head overrides for dark background */
+.section-features .section-eyebrow { color: rgba(255,255,255,0.45); }
+.section-features .section-title   { color: #FFFFFF; }
+.section-features .section-subtitle {
+    color:     rgba(255,255,255,0.45);
+    max-width: 520px;
+    margin:    0 auto;
+}
+
+/* Override dark-mode heading bleed since this section is always dark */
+[data-theme="dark"] .section-features .section-title { color: #FFFFFF; }
+
+.section-features .container { position: relative; z-index: 1; }
+
+/* Feature cards — dark glass on dark bg */
+.feature-card {
+    background:    rgba(255,255,255,0.04);
+    border:        1px solid rgba(255,255,255,0.08);
+    border-radius: var(--border-radius-lg);
+    padding:       2rem 1.75rem;
+    height:        100%;
+    position:      relative;
+    overflow:      hidden;
+    box-shadow:    none;
+    transition:
+        border-color     var(--transition),
+        background       var(--transition),
+        transform        0.2s ease,
+        box-shadow       0.2s ease;
+}
+
+.feature-card::before {
+    content:    '';
+    position:   absolute;
+    top: 0; left: 0; right: 0;
+    height:     2px;
+    background: linear-gradient(90deg,
+        var(--accent-secondary) 0%,
+        var(--accent-primary)   60%,
+        transparent             100%
+    );
+    opacity:    0;
+    transition: opacity var(--transition);
+    pointer-events: none;
+}
+
+.feature-card:hover {
+    background:   rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.15);
+    transform:    translateY(-4px);
+    box-shadow:   0 8px 24px rgba(0,0,0,0.16);
+}
+
+.feature-card:hover::before { opacity: 0.8; }
+
+/* Step number — large display numeral, red accent */
+.feature-icon {
+    width:            46px;
+    height:           46px;
+    background-color: rgba(var(--accent-primary-rgb), 0.15);
+    color:            var(--accent-primary);
+    border-radius:    var(--border-radius);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        1.2rem;
+    margin-bottom:    1.1rem;
+    border:           1px solid rgba(var(--accent-primary-rgb), 0.2);
+    transition:       background-color var(--transition);
+}
+
+.feature-card:hover .feature-icon {
+    background-color: rgba(var(--accent-primary-rgb), 0.22);
+}
+
+.feature-step {
+    display:        block;
+    font-size:      0.63rem;
+    font-weight:    700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color:          rgba(255,255,255,0.35);
+    margin-bottom:  0.35rem;
+}
+
+.feature-title {
+    font-family:    var(--font-display);
+    font-size:      1rem;
+    font-weight:    700;
+    color:          rgba(255,255,255,0.9);
+    margin-bottom:  0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.feature-desc {
+    font-size:   0.84rem;
+    color:       rgba(255,255,255,0.42);
+    line-height: 1.7;
+    margin:      0;
+}
+
+
+/* =============================================================================
+   12. SECTION: CTA BANNER
+   Returns to light for visual relief — accent gradient inner block with
+   sharp geometry. Login brand DNA: red-to-dark gradient, white type.
+============================================================================= */
+.section-cta {
+    padding:          5rem 0;
+    background-color: var(--bg-main);
+    transition:       background-color var(--transition);
+}
+
+.cta-inner {
+    background:    linear-gradient(135deg, var(--accent-secondary) 0%, #002233 55%, var(--accent-primary) 100%);
+    border-radius: var(--border-radius-xl);
+    padding:       3rem 2.75rem;
+    display:       flex;
+    flex-wrap:     wrap;
+    align-items:   center;
+    justify-content: space-between;
+    gap:           1.5rem;
+    position:      relative;
+    overflow:      hidden;
+}
+
+/* Grid texture on the CTA block */
+.cta-inner::before {
+    content:    '';
+    position:   absolute;
+    inset:      0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:  none;
+}
+
+/* Red angular shape — top-right echo of hero geometry */
+.cta-inner::after {
+    content:    '';
+    position:   absolute;
+    top:        -30%;
+    right:      -5%;
+    width:      30%;
+    height:     180%;
+    background: var(--accent-primary);
+    clip-path:  polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+    opacity:    0.55;
+    pointer-events: none;
+}
+
+@media (max-width: 575.98px) {
+    .cta-inner {
+        padding:        2.25rem 1.75rem;
+        flex-direction: column;
+        text-align:     center;
+    }
+}
+
+.cta-inner > * { position: relative; z-index: 1; } /* above pseudo-elements */
+
+.cta-title {
+    font-family:    var(--font-display);
+    font-size:      clamp(1.3rem, 2.8vw, 1.8rem);
+    font-weight:    900;
+    color:          #FFFFFF;
+    letter-spacing: -0.03em;
+    line-height:    1.1;
+    margin-bottom:  0.5rem;
+}
+
+.cta-subtitle {
+    font-size: 0.88rem;
+    color:     rgba(255,255,255,0.5);
+    margin:    0;
+}
+
+/* CTA button — white on dark, premium */
+.btn-cta {
+    background:       #FFFFFF;
+    color:            var(--accent-secondary);
+    font-weight:      700;
+    font-size:        0.88rem;
+    padding:          0.78rem 1.75rem;
+    border:           none;
+    border-radius:    12px;
+    text-decoration:  none;
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.45rem;
+    flex-shrink:      0;
+    white-space:      nowrap;
+    position:         relative;
+    overflow:         hidden;
+    box-shadow:       0 2px 10px rgba(0,0,0,0.14);
+    transition:
+        background-color var(--transition),
+        transform        0.15s ease,
+        box-shadow       var(--transition);
+}
+
+.btn-cta::after {
+    content:    '';
+    position:   absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,68,102,0.08), transparent);
+    transition: left 0.45s ease;
+}
+
+.btn-cta:hover {
+    background-color: rgba(255,255,255,0.92);
+    color:            var(--accent-secondary);
+    text-decoration:  none;
+    transform:        translateY(-2px);
+    box-shadow:       0 4px 16px rgba(0,0,0,0.18);
+}
+.btn-cta:hover::after { left: 150%; }
+.btn-cta:active { transform: translateY(0); }
+
+
+/* =============================================================================
+   13. FOOTER — 4-column desktop / stacked centered mobile
+============================================================================= */
+.site-footer {
+    background-color: var(--footer-bg);
+    border-top:       3px solid var(--footer-border);
+    color:            rgba(255, 255, 255, 0.5);
+    transition:       background-color var(--transition);
+}
+
+.footer-main {
+    padding: 3.5rem 0 2.5rem;
+}
+
+/* Brand column */
+.footer-brand-group {
+    display:       flex;
+    align-items:   center;
+    gap:           0.65rem;
+    margin-bottom: 1rem;
+}
+
+.footer-logo-mark {
+    width:            36px;
+    height:           36px;
+    background:       linear-gradient(145deg, var(--accent-primary) 0%, #C52030 100%);
+    color:            #fff;
+    border-radius:    10px;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        0.95rem;
+    flex-shrink:      0;
+    box-shadow:
+        0 2px 8px rgba(var(--accent-primary-rgb), 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22); /* matches navbar .brand-logo-mark exactly */
+}
+
+.footer-brand-name {
+    font-size:      0.95rem;
+    font-weight:    800;
+    color:          #FFFFFF;
+    letter-spacing: -0.02em;
+    line-height:    1.2;
+}
+
+.footer-brand-tag {
+    font-size:   0.65rem;
+    color:       rgba(255,255,255,0.35);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.footer-description {
+    font-size:     0.82rem;
+    color:         rgba(255, 255, 255, 0.42);
+    line-height:   1.7;
+    margin-bottom: 1.25rem;
+    max-width:     280px;
+}
+
+/* Social icons */
+.footer-social {
+    display: flex;
+    gap:     0.5rem;
+}
+
+.social-icon {
+    width:            32px;
+    height:           32px;
+    background-color: rgba(255, 255, 255, 0.07);
+    color:            rgba(255, 255, 255, 0.45);
+    border-radius:    var(--border-radius);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        0.88rem;
+    text-decoration:  none;
+    transition:
+        background-color var(--transition),
+        color            var(--transition),
+        transform        0.15s ease;
+}
+
+.social-icon:hover {
+    background-color: var(--accent-primary);
+    color:            #fff;
+    text-decoration:  none;
+    transform:        translateY(-2px);
+}
+
+/* Column headings */
+.footer-col-heading {
+    font-size:      0.68rem;
+    font-weight:    700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color:          rgba(255, 255, 255, 0.6);
+    margin-bottom:  1rem;
+}
+
+/* Link lists */
+.footer-link-list {
+    list-style:    none;
+    margin:        0;
+    padding:       0;
+    display:       flex;
+    flex-direction:column;
+    gap:           0.55rem;
+}
+
+.footer-link {
+    font-size:       0.82rem;
+    color:           rgba(255, 255, 255, 0.42);
+    text-decoration: none;
+    transition:      color var(--transition);
+}
+
+.footer-link:hover {
+    color:           #FFFFFF;
+    text-decoration: none;
+}
+
+/* Address column */
+.footer-address {
+    font-style: normal;
+    display:    flex;
+    flex-direction: column;
+    gap:        0.65rem;
+}
+
+.footer-address p {
+    font-size:   0.82rem;
+    color:       rgba(255, 255, 255, 0.42);
+    display:     flex;
+    gap:         0.5rem;
+    align-items: flex-start;
+    line-height: 1.5;
+}
+
+.footer-addr-icon {
+    margin-top: 0.15em;
+    flex-shrink: 0;
+    color:      rgba(255, 255, 255, 0.3);
+}
+
+/* Bottom bar */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding:    1.25rem 0;
+}
+
+.footer-copy {
+    font-size: 0.75rem;
+    color:     rgba(255, 255, 255, 0.25);
+}
+
+/* Mobile: stack and center footer columns */
+@media (max-width: 575.98px) {
+    .footer-main {
+        padding: 2.5rem 0 2rem;
+        text-align: center;
+    }
+
+    .footer-brand-group    { justify-content: center; }
+    .footer-description    { max-width: 100%; }
+    .footer-social         { justify-content: center; }
+    .footer-link-list      { align-items: center; }
+    .footer-address p      { justify-content: center; }
+    .footer-col-heading    { text-align: center; }
+    .footer-bottom .row > div { text-align: center !important; }
+}
+
+
+/* =============================================================================
+   14. BACK TO TOP BUTTON
+============================================================================= */
+.back-to-top {
+    position:         fixed;
+    bottom:           1.75rem;
+    right:            1.75rem;
+    width:            40px;
+    height:           40px;
+    background-color: var(--accent-primary);
+    color:            #FFFFFF;
+    border:           none;
+    border-radius:    var(--border-radius);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        1rem;
+    cursor:           pointer;
+    z-index:          1000;
+    box-shadow:       0 2px 10px rgba(var(--accent-primary-rgb), 0.20);
+    /* Hidden by default, shown by JS on scroll */
+    opacity:          0;
+    transform:        translateY(12px);
+    pointer-events:   none;
+    transition:
+        opacity          0.3s ease-in-out,
+        transform        0.3s ease-in-out,
+        background-color var(--transition);
+}
+
+.back-to-top.is-visible {
+    opacity:        1;
+    transform:      translateY(0);
+    pointer-events: all;
+}
+
+.back-to-top:hover {
+    background-color: var(--accent-primary-hover);
+    transform:        translateY(-2px);
+}
+
+
+/* =============================================================================
+   15. UTILITY & SHARED COMPONENTS
+============================================================================= */
+
+/* Empty state (tables, panels) */
+.empty-state {
+    text-align: center;
+    padding:    2.75rem 1rem;
+}
+
+.empty-state-icon {
+    font-size:     2.2rem;
+    opacity:       0.22;
+    display:       block;
+    margin-bottom: 0.65rem;
+    color:         var(--text-muted);
+}
+
+.empty-state-text {
+    font-size:   0.88rem;
+    color:       var(--text-secondary);
+    max-width:   340px;
+    margin:      0 auto;
+    line-height: 1.6;
+}
+
+
+/* =============================================================================
+   16. ANIMATIONS & TRANSITIONS
+   All transitions standardised to 0.3s ease-in-out per spec.
+============================================================================= */
+body {
+    animation: page-fadein 0.4s ease both;
+}
+
+@keyframes page-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}
+
+
+
+/* Flash Alert — Zenith Design System
+   Uses --accent-secondary (Deep Trust Blue) border to stay on-palette.
+   Bootstrap's native .alert-success green is deliberately avoided. */
+.alert-zenith-success {
+    background-color: color-mix(in srgb, var(--accent-secondary) 8%, var(--bg-card));
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-secondary);
+    color: var(--text-primary);
+    border-radius: 6px;
+}
+[data-theme="dark"] .alert-zenith-success {
+    background-color: color-mix(in srgb, var(--accent-secondary) 15%, var(--bg-card));
+}
+
+
