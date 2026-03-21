@@ -1,61 +1,55 @@
 /*
  * =============================================================================
  * THE ZENITH VIEW — /assets/css/submissions.css
- * Student Submission Ledger Stylesheet
+ * Submission Ledger Page Stylesheet
  *
- * DESIGN PRINCIPLES:
- *   - Zero hardcoded colors. Every color value uses CSS variables from style.css.
- *   - Semantic status colors (green/amber/red) are the sole exception — they
- *     represent universal UI conventions, not brand colors.
- *   - Card-per-row architecture, mirroring leaderboard.css.
- *   - Desktop: single flex row with five distinct data zones.
- *   - Mobile (<768px): two-row stack — [icon+title] / [date+badge+pts].
- *   - Status strip: horizontally scrollable pills, no visible scrollbar.
+ * DESIGN SYSTEM:
+ *   - Zero hardcoded colours. All values use CSS variables from style.css.
+ *   - NO <table> — flexbox card list. No horizontal scroll on any screen.
+ *   - Mobile-first: base styles = smallest screen. @media scales up.
+ *   - Status badge classes (.badge--approved / --pending / --rejected) are
+ *     shared with dashboard.css — same exact values, full continuity.
+ *   - Breadcrumb uses the master .guide-breadcrumb pattern (synced system-wide).
  *
  * TABLE OF CONTENTS
- *   01. Wrapper
- *   02. Page Header & Breadcrumb
- *   03. Status Strip (Filter Pills)
- *   04. Ledger Container
- *   05. Ledger Card — Base State
- *   06. Ledger Card — Hover State
- *   07. Ledger Card — Status Border Variants
- *   08. Category Icon Circle
- *   09. Card Body Columns (Details / Date / Badge / Points)
- *   10. Mobile Footer Bar
- *   11. Rejection Explainer Panel
- *   12. Empty & No-Results States
- *   13. Shared: Status Badges (mirrors dashboard.css exactly)
- *   14. Shared: Upload Hero Button (mirrors dashboard.css exactly)
- *   15. Dark Mode Overrides
+ *   01. Page Wrapper
+ *   02. Breadcrumb (master block)
+ *   03. Page Header
+ *   04. New Submission Button
+ *   05. Filter Strip (pill buttons)
+ *   06. Ledger List Container
+ *   07. Ledger Card — Base (desktop flex row)
+ *   08. Ledger Card — Mobile Stacking (< 768px)
+ *   09. Card Sub-Components (Details, Date, Action, Points)
+ *   10. Status Badges (shared spec — matches dashboard.css exactly)
+ *   11. View Proof Ghost Button
+ *   12. Rejection Explainer Section
+ *   13. Empty State
+ *   14. No-Results State
+ *   15. Dark Mode Refinements
  *   16. Accessibility & Print
  * =============================================================================
  */
 
 
 /* =============================================================================
-   01. WRAPPER
-   Max-width and padding mirror lb-wrapper / dashboard-wrapper for consistency.
-   Standard bottom clearance — no sticky bar on this page.
-============================================================================= */
+   01. PAGE WRAPPER
+   Matches .upload-wrapper padding — consistent across all student pages.
+   ============================================================================= */
 
-.sl-wrapper {
-    max-width:  1080px;
-    margin:     0 auto;
-    padding:    1.5rem 1rem 4rem;
+.sub-wrapper {
+    max-width: 980px;
+    margin:    0 auto;
+    padding:   1.5rem 1rem 4rem;
 }
 
-@media (min-width: 768px)  { .sl-wrapper { padding: 2rem 1.5rem 4rem; } }
-@media (min-width: 1200px) { .sl-wrapper { padding: 2.5rem 2rem 5rem; } }
+@media (min-width: 768px)  { .sub-wrapper { padding: 2rem 1.5rem 4rem; } }
+@media (min-width: 1200px) { .sub-wrapper { padding: 2.5rem 2rem 5rem; } }
 
 
 /* =============================================================================
-   02. PAGE HEADER & BREADCRUMB
-   Breadcrumb: shared .guide-breadcrumb pattern (matches leaderboard.php).
-   Header body: text left, upload CTA right — wraps on mobile.
-============================================================================= */
-
-/* ── Breadcrumb ─────────────────────────────────────────────────────────── */
+   02. BREADCRUMB — master block (synced with upload.css and points.css)
+   ============================================================================= */
 
 .guide-breadcrumb {
     display:       flex;
@@ -75,642 +69,527 @@
     transition:      color 0.15s ease;
 }
 
-.guide-breadcrumb__link:hover  { color: var(--accent-primary); text-decoration: none; }
-.guide-breadcrumb__link i      { font-size: 0.8rem; }
-.guide-breadcrumb__sep         { color: var(--border-color); }
-.guide-breadcrumb__current     { color: var(--accent-primary); font-weight: 600; }
-
-/* ── Header shell ───────────────────────────────────────────────────────── */
-
-.sl-header {
-    margin-bottom: 1.75rem;
+.guide-breadcrumb__link:hover {
+    color:           var(--accent-primary);
+    text-decoration: none;
 }
 
-.sl-header__body {
+.guide-breadcrumb__link i { font-size: 0.8rem; }
+
+.guide-breadcrumb__sep     { color: var(--border-color); }
+.guide-breadcrumb__current { color: var(--accent-primary); font-weight: 600; }
+
+
+/* =============================================================================
+   03. PAGE HEADER
+   ============================================================================= */
+
+.sub-header {
     display:         flex;
     align-items:     flex-start;
     justify-content: space-between;
-    gap:             1.5rem;
+    gap:             1.25rem;
     flex-wrap:       wrap;
+    margin-bottom:   2rem;
 }
 
-/* Eyebrow — accent-primary uppercase label above the h1 */
-.sl-header__eyebrow {
+.sub-header__text { flex: 1; min-width: 0; }
+
+.sub-header__eyebrow {
     display:        block;
     font-size:      0.68rem;
     font-weight:    600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color:          var(--accent-primary);
-    margin-bottom:  0.35rem;
+    margin:         0 0 0.35rem;
 }
 
-.sl-header__title {
+.sub-header__title {
     font-size:      clamp(1.5rem, 3.5vw, 2rem);
     font-weight:    800;
     color:          var(--text-primary);
-    margin:         0 0 0.4rem;
+    margin:         0 0 0.5rem;
     letter-spacing: -0.025em;
     line-height:    1.2;
 }
 
-.sl-header__sub {
+.sub-header__sub {
     font-size:   0.9rem;
     color:       var(--text-secondary);
     line-height: 1.7;
-    max-width:   520px;
+    max-width:   540px;
     margin:      0;
 }
 
-.sl-header__action {
-    flex-shrink: 0;
-}
 
-/* ── Upload Hero Button — mirrors dashboard.css exactly ─────────────────── */
+/* =============================================================================
+   04. NEW SUBMISSION BUTTON
+   Primary action — solid accent-primary. Reused in the empty state.
+   ============================================================================= */
 
-.btn-upload-hero {
+.btn-new-submission {
     display:          inline-flex;
     align-items:      center;
-    gap:              0.5rem;
-    padding:          0.6rem 1.25rem;
+    gap:              0.45rem;
+    padding:          0.6rem 1.2rem;
     background-color: var(--accent-primary);
     color:            #ffffff;
-    border:           1.5px solid var(--accent-primary);
     font-size:        0.875rem;
     font-weight:      600;
     border-radius:    8px;
     text-decoration:  none;
     white-space:      nowrap;
-    transition:       background-color 0.2s ease, border-color 0.2s ease,
-                      transform 0.15s ease, box-shadow 0.2s ease;
-    min-height:       44px;
+    flex-shrink:      0;
+    min-height:       42px;
+    border:           1.5px solid var(--accent-primary);
+    transition:       background-color 0.18s ease, transform 0.15s ease,
+                      box-shadow 0.18s ease;
+    box-shadow:       0 3px 10px rgba(var(--accent-primary-rgb, 183,32,46), 0.22);
 }
 
-.btn-upload-hero:hover,
-.btn-upload-hero:focus-visible {
-    background-color: var(--accent-primary-hover);
-    border-color:     var(--accent-primary-hover);
+.btn-new-submission:hover {
+    background-color: var(--accent-primary-hover, #9A1925);
+    border-color:     var(--accent-primary-hover, #9A1925);
     color:            #ffffff;
     transform:        translateY(-1px);
-    box-shadow:       0 4px 12px rgba(0, 0, 0, 0.18);
+    box-shadow:       0 6px 18px rgba(var(--accent-primary-rgb, 183,32,46), 0.32);
     text-decoration:  none;
 }
 
-.btn-upload-hero:active {
-    transform:  translateY(0);
-    box-shadow: none;
-}
+.btn-new-submission:active { transform: translateY(0); box-shadow: none; }
 
-/* Hide CTA text on very small screens — icon alone is clear enough */
-@media (max-width: 479px) {
-    .btn-upload-hero span { display: none; }
-    .btn-upload-hero      { padding: 0.6rem 0.9rem; }
+/* On mobile the header button sits below the title text naturally */
+@media (max-width: 480px) {
+    .sub-header { flex-direction: column; }
+    .btn-new-submission { width: 100%; justify-content: center; }
 }
 
 
 /* =============================================================================
-   03. STATUS STRIP — Filter Pills
-   Horizontally scrollable pill row. No visible scrollbar on any OS.
-   Active pill fills with the matching semantic color.
-   Inactive pills are neutral chips that highlight on hover.
-============================================================================= */
+   05. FILTER STRIP
+   Horizontally scrollable on mobile (scrollbar hidden).
+   Active pill carries .filter-pill--active and matches the status colour.
+   ============================================================================= */
 
-.sl-strip {
-    display:          flex;
-    align-items:      center;
-    gap:              0.5rem;
-    overflow-x:       auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width:  none;
-    padding-bottom:   3px;   /* prevent clipped focus rings */
-    margin-bottom:    1.5rem;
+.filter-strip {
+    display:            flex;
+    align-items:        center;
+    flex-wrap:          nowrap;          /* single line — triggers horizontal scroll */
+    gap:                0.5rem;
+    margin-bottom:      1.5rem;
+    overflow-x:         auto;
+    scrollbar-width:    none;            /* Firefox */
+    -ms-overflow-style: none;
+    padding-bottom:     2px;             /* prevent clipped focus rings */
 }
 
-.sl-strip::-webkit-scrollbar { display: none; }
+.filter-strip::-webkit-scrollbar { display: none; }
 
-/* ── Base pill ──────────────────────────────────────────────────────────── */
-
-.sl-pill {
-    display:          inline-flex;
-    align-items:      center;
-    gap:              0.4rem;
-    flex-shrink:      0;
-    height:           36px;
-    padding:          0 0.9rem;
-    font-family:      var(--font-family, inherit);
-    font-size:        0.82rem;
-    font-weight:      600;
-    color:            var(--text-secondary);
+/* Base pill */
+.filter-pill {
+    display:        inline-flex;
+    align-items:    center;
+    gap:            0.35rem;
+    flex-shrink:    0;
+    height:         36px;
+    padding:        0 1rem;
+    font-family:    inherit;
+    font-size:      0.8rem;
+    font-weight:    600;
+    border-radius:  20px;
+    border:         1.5px solid var(--border-color);
     background-color: var(--bg-subtle);
-    border:           1px solid var(--border-color);
-    border-radius:    20px;
-    cursor:           pointer;
-    white-space:      nowrap;
-    transition:
-        background-color 0.18s ease,
-        border-color     0.18s ease,
-        color            0.18s ease,
-        box-shadow       0.18s ease;
-    /* Reset browser button styles */
-    appearance: none;
-    -webkit-appearance: none;
+    color:          var(--text-secondary);
+    cursor:         pointer;
+    outline:        none;
+    white-space:    nowrap;
+    transition:     background-color 0.15s ease, border-color 0.15s ease,
+                    color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sl-pill:hover {
+.filter-pill:hover {
     background-color: var(--bg-card);
-    border-color:     color-mix(in srgb, var(--accent-primary) 35%, transparent);
+    border-color:     color-mix(in srgb, var(--accent-secondary) 45%, var(--border-color));
     color:            var(--text-primary);
 }
 
-.sl-pill i { font-size: 0.72rem; }
-
-.sl-pill__count {
+/* Count badge inside each pill */
+.filter-pill__count {
     display:          inline-flex;
     align-items:      center;
     justify-content:  center;
-    min-width:        1.4rem;
-    height:           1.4rem;
-    padding:          0 0.35rem;
+    min-width:        20px;
+    height:           18px;
+    padding:          0 5px;
     font-size:        0.68rem;
     font-weight:      700;
     border-radius:    10px;
-    background-color: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+    background-color: var(--border-color);
     color:            var(--text-secondary);
-    transition:       background-color 0.18s ease, color 0.18s ease;
+    transition:       background-color 0.15s ease, color 0.15s ease;
 }
 
-/* ── Active "All" pill — accent-secondary (trust blue) ──────────────────── */
-
-.sl-pill--active {
+/* ── Active "All" pill ───────────────────────────────────────────────────────── */
+.filter-pill--active {
     background-color: var(--accent-secondary);
     border-color:     var(--accent-secondary);
     color:            #ffffff;
+    box-shadow:       0 2px 8px rgba(var(--accent-secondary-rgb, 0,68,102), 0.25);
 }
 
-.sl-pill--active .sl-pill__count {
-    background-color: rgba(255, 255, 255, 0.22);
+.filter-pill--active .filter-pill__count {
+    background-color: rgba(255, 255, 255, 0.25);
     color:            #ffffff;
 }
 
-.sl-pill--active:hover {
-    background-color: var(--accent-secondary-hover);
-    border-color:     var(--accent-secondary-hover);
-    color:            #ffffff;
+/* ── Approved pill ───────────────────────────────────────────────────────────── */
+.filter-pill--approved { color: #198754; border-color: rgba(25, 135, 84, 0.35); }
+.filter-pill--approved:hover {
+    background-color: rgba(25, 135, 84, 0.06);
+    border-color:     #198754;
 }
-
-/* ── Approved pill active state — semantic green ────────────────────────── */
-
-.sl-pill--approved.sl-pill--active {
+.filter-pill--approved.filter-pill--active {
     background-color: #198754;
     border-color:     #198754;
     color:            #ffffff;
+    box-shadow:       0 2px 8px rgba(25, 135, 84, 0.3);
 }
 
-.sl-pill--approved.sl-pill--active:hover {
-    background-color: #146c43;
-    border-color:     #146c43;
+/* ── Pending pill ────────────────────────────────────────────────────────────── */
+.filter-pill--pending { color: #a07000; border-color: rgba(240, 165, 0, 0.35); }
+.filter-pill--pending:hover {
+    background-color: rgba(240, 165, 0, 0.06);
+    border-color:     #f0a500;
 }
-
-.sl-pill--approved.sl-pill--active .sl-pill__count {
-    background-color: rgba(255, 255, 255, 0.22);
+.filter-pill--pending.filter-pill--active {
+    background-color: #f0a500;
+    border-color:     #f0a500;
     color:            #ffffff;
+    box-shadow:       0 2px 8px rgba(240, 165, 0, 0.3);
 }
 
-/* ── Pending pill active state — semantic amber ─────────────────────────── */
-
-.sl-pill--pending.sl-pill--active {
-    background-color: #a07000;
-    border-color:     #a07000;
-    color:            #ffffff;
+/* ── Rejected pill ───────────────────────────────────────────────────────────── */
+.filter-pill--rejected { color: #dc3545; border-color: rgba(220, 53, 69, 0.35); }
+.filter-pill--rejected:hover {
+    background-color: rgba(220, 53, 69, 0.06);
+    border-color:     #dc3545;
 }
-
-.sl-pill--pending.sl-pill--active:hover {
-    background-color: #805800;
-    border-color:     #805800;
-}
-
-.sl-pill--pending.sl-pill--active .sl-pill__count {
-    background-color: rgba(255, 255, 255, 0.22);
-    color:            #ffffff;
-}
-
-/* ── Rejected pill active state — semantic red ──────────────────────────── */
-
-.sl-pill--rejected.sl-pill--active {
+.filter-pill--rejected.filter-pill--active {
     background-color: #dc3545;
     border-color:     #dc3545;
     color:            #ffffff;
+    box-shadow:       0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
-.sl-pill--rejected.sl-pill--active:hover {
-    background-color: #b02a37;
-    border-color:     #b02a37;
-}
-
-.sl-pill--rejected.sl-pill--active .sl-pill__count {
-    background-color: rgba(255, 255, 255, 0.22);
+/* When any coloured pill is active, update its count badge */
+.filter-pill--approved.filter-pill--active .filter-pill__count,
+.filter-pill--pending.filter-pill--active  .filter-pill__count,
+.filter-pill--rejected.filter-pill--active .filter-pill__count {
+    background-color: rgba(255, 255, 255, 0.25);
     color:            #ffffff;
 }
 
 
 /* =============================================================================
-   04. LEDGER CONTAINER
-   Simple block container — no extra shell card around the list.
-   The individual .ledger-card items are the visual units.
-============================================================================= */
+   06. LEDGER LIST CONTAINER
+   ============================================================================= */
 
-.ledger {
+.ledger-list {
     display:        flex;
     flex-direction: column;
-    gap:            0.75rem;
+    gap:            0;          /* spacing managed by ledger-card margin-bottom */
+    min-height:     60vh;       /* prevents footer creep when few cards are shown */
 }
 
 
 /* =============================================================================
-   05. LEDGER CARD — BASE STATE
-   Single card = single submission. Flat at rest.
-   Desktop: one-line flex row across five zones.
-   Mobile: two-row stack (handled in §10).
-============================================================================= */
+   07. LEDGER CARD — BASE
+   .ledger-card is a flex COLUMN. Its two children always stack vertically:
+     1. .ledger-card__main      — inner flex row (details + date + status + …)
+     2. .ledger-card__rejection — full-width explainer, only on rejected cards
+
+   display:flex is set here so JS restoring 'flex' on filter show/hide preserves
+   the column axis — rejection never collapses into a horizontal row.
+   ============================================================================= */
 
 .ledger-card {
+    display:          flex;              /* column container — __main + __rejection stack */
+    flex-direction:   column;
     background-color: var(--bg-card);
     border:           1px solid var(--border-color);
     border-radius:    12px;
     padding:          1.25rem;
-    transition:
-        transform    0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow   0.22s ease,
-        border-color 0.18s ease;
-    will-change: transform;
+    margin-bottom:    0.75rem;
+    transition:       transform 0.2s ease, box-shadow 0.2s ease,
+                      border-color 0.2s ease;
+    position:         relative;
+    overflow:         hidden;
 }
 
-/* Light mode shadow */
 [data-theme="light"] .ledger-card,
 :root .ledger-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="dark"] .ledger-card { box-shadow: none; }
 
-
-/* =============================================================================
-   06. LEDGER CARD — HOVER STATE
-   Spring-curve lift + elevated shadow + accent border.
-   Mirrors the leaderboard ranking-card hover exactly.
-============================================================================= */
-
 .ledger-card:hover {
-    transform:    translateY(-2px);
-    box-shadow:   0 8px 28px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-color: color-mix(in srgb, var(--accent-secondary) 55%, transparent);
+    transform:    translateY(-1px);
+    box-shadow:   0 6px 16px rgba(0, 0, 0, 0.06);
+    border-color: color-mix(in srgb, var(--accent-secondary) 30%, var(--border-color));
 }
 
-[data-theme="dark"] .ledger-card:hover {
-    box-shadow:   0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
-    border-color: color-mix(in srgb, var(--accent-secondary) 75%, transparent);
+.ledger-card:last-of-type { margin-bottom: 0; }
+
+/* Left accent stripe — matches status colour, drawn with ::before */
+.ledger-card[data-status="approved"]::before {
+    content:       '';
+    position:      absolute;
+    left:          0; top: 0; bottom: 0;
+    width:         3px;
+    background:    #198754;
+    border-radius: 12px 0 0 12px;
 }
 
-
-/* =============================================================================
-   07. LEDGER CARD — STATUS LEFT BORDER VARIANTS
-   3px solid accent matching the semantic color — same pattern as dashboard rows.
-============================================================================= */
-
-.ledger-card--approved { border-left: 3px solid #198754; }
-.ledger-card--pending  { border-left: 3px solid #f0a500; }
-.ledger-card--rejected { border-left: 3px solid #dc3545; }
-
-
-/* =============================================================================
-   08. CATEGORY ICON CIRCLE
-   40×40 circle with a category-specific tinted background.
-   Each modifier sets its own bg/color pair using design-system variables.
-============================================================================= */
-
-.lc-icon {
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    flex-shrink:     0;
-    width:           40px;
-    height:          40px;
-    border-radius:   50%;
-    font-size:       1rem;
-    /* Default (fallback) */
-    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
-    color:            var(--accent-secondary);
-    border:           1px solid color-mix(in srgb, var(--accent-secondary) 20%, transparent);
+.ledger-card[data-status="pending"]::before {
+    content:       '';
+    position:      absolute;
+    left:          0; top: 0; bottom: 0;
+    width:         3px;
+    background:    #f0a500;
+    border-radius: 12px 0 0 12px;
 }
 
-.lc-icon.icon--tech {
-    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
-    color:            var(--accent-secondary);
-    border-color:     color-mix(in srgb, var(--accent-secondary) 22%, transparent);
+.ledger-card[data-status="rejected"]::before {
+    content:       '';
+    position:      absolute;
+    left:          0; top: 0; bottom: 0;
+    width:         3px;
+    background:    var(--accent-primary);
+    border-radius: 12px 0 0 12px;
 }
 
-.lc-icon.icon--research {
-    background-color: color-mix(in srgb, #6f42c1 10%, var(--bg-card));
-    color:            #6f42c1;
-    border-color:     color-mix(in srgb, #6f42c1 22%, transparent);
-}
-
-.lc-icon.icon--extra {
-    background-color: color-mix(in srgb, #f0a500 10%, var(--bg-card));
-    color:            #a07000;
-    border-color:     color-mix(in srgb, #f0a500 22%, transparent);
-}
-
-.lc-icon.icon--leadership {
-    background-color: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
-    color:            var(--accent-primary);
-    border-color:     color-mix(in srgb, var(--accent-primary) 22%, transparent);
-}
-
-.lc-icon.icon--academic {
-    background-color: color-mix(in srgb, #198754 10%, var(--bg-card));
-    color:            #198754;
-    border-color:     color-mix(in srgb, #198754 22%, transparent);
-}
-
-.lc-icon.icon--default {
-    background-color: color-mix(in srgb, var(--text-secondary) 8%, var(--bg-card));
-    color:            var(--text-secondary);
-    border-color:     var(--border-color);
-}
-
-
-/* =============================================================================
-   09. CARD BODY COLUMNS — Desktop layout
-   .ledger-card__body is a flex row on ≥768px.
-   Column widths are set via flex properties so the layout is self-organising:
-     lc-icon     → fixed 40px (handled by the icon itself)
-     lc-details  → flex:1 — grows to fill available space
-     lc-date     → fixed width, right of details
-     status-badge→ fixed/shrink
-     lc-pts      → fixed, right-aligned
-============================================================================= */
-
-.ledger-card__body {
+/* ── Main row — horizontal flex on desktop ──────────────────────────────────── */
+.ledger-card__main {
     display:     flex;
     align-items: center;
-    gap:         1rem;
+    gap:         1.25rem;
+    flex-wrap:   nowrap;
 }
 
-/* ── Details: title + meta ──────────────────────────────────────────────── */
+/* Meta-row: transparent passthrough on desktop — children behave as if
+   they are direct children of __main (same flex context, no visual change). */
+.ledger-card__meta-row {
+    display:     contents;
+}
 
-.lc-details {
-    display:        flex;
+
+/* =============================================================================
+   08. LEDGER CARD — MOBILE STACKING (< 768px)
+
+   Structure:
+     .ledger-card__main        — flex column, stacks sections vertically
+       .ledger-card__details   — Row 1: Title + Category, full width, text wraps
+       .ledger-card__meta-row  — Row 2: 2×2 CSS grid
+         .ledger-card__date    — cell [1,1] left
+         .ledger-card__status  — cell [1,2] right
+         .ledger-card__action  — cell [2,1] left
+         .ledger-card__points  — cell [2,2] right
+
+   display:contents on desktop makes __meta-row invisible to the flex layout.
+   On mobile it becomes a real block and owns the 2×2 grid.
+   ============================================================================= */
+
+@media (max-width: 767px) {
+
+    /* ── Outer container: column so details sits above meta-row ─────────────── */
+    .ledger-card__main {
+        flex-direction: column;
+        align-items:    stretch;   /* children fill full card width */
+        gap:            0.75rem;
+    }
+
+    /* ── Row 1: Details — full width, title allowed to wrap ────────────────── */
+    .ledger-card__details {
+        width:   100%;
+        flex:    none;
+        display: block;            /* plain block so children stack naturally */
+    }
+
+    /* Allow long titles to wrap rather than truncate */
+    .ledger-card__title {
+        white-space:   normal;
+        overflow:      visible;
+        text-overflow: clip;
+    }
+
+    /* Allow meta (tier · category) to wrap too */
+    .ledger-card__meta {
+        white-space:   normal;
+        overflow:      visible;
+        text-overflow: clip;
+        flex-wrap:     wrap;
+    }
+
+    /* ── Row 2: Meta-row becomes a real 2×2 grid ───────────────────────────── */
+    .ledger-card__meta-row {
+        display:               grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows:    auto auto;
+        gap:                   0.6rem 0.75rem;
+        align-items:           center;
+        width:                 100%;
+    }
+
+    /* Cell [1,1]: Date — left column, row 1 */
+    .ledger-card__date {
+        grid-column: 1;
+        grid-row:    1;
+    }
+
+    /* Cell [1,2]: Status — right column, row 1 */
+    .ledger-card__status {
+        grid-column:  2;
+        grid-row:     1;
+        justify-self: end;     /* badge hugs the right edge */
+    }
+
+    /* Cell [2,1]: View Proof button — left column, row 2 */
+    .ledger-card__action {
+        grid-column: 1;
+        grid-row:    2;
+    }
+
+    /* Cell [2,2]: Points — right column, row 2 */
+    .ledger-card__points {
+        grid-column:  2;
+        grid-row:     2;
+        justify-self: end;     /* value hugs the right edge */
+        text-align:   right;
+        min-width:    0;
+    }
+}
+
+
+/* =============================================================================
+   09. CARD SUB-COMPONENTS
+   ============================================================================= */
+
+/* ── Details group — flex-grow, min-width:0 for ellipsis on long titles ─────── */
+.ledger-card__details {
+    flex:        1;
+    min-width:   0;
+    display:     flex;
     flex-direction: column;
-    gap:            0.2rem;
-    flex:           1;
-    min-width:      0; /* enables text-overflow: ellipsis */
+    gap:         0.22rem;
 }
 
-.lc-title {
-    font-size:     0.9rem;
+.ledger-card__title {
+    font-size:     0.95rem;
     font-weight:   700;
     color:         var(--text-primary);
+    line-height:   1.35;
     white-space:   nowrap;
     overflow:      hidden;
     text-overflow: ellipsis;
-    line-height:   1.3;
+    display:       block;
 }
 
-.lc-meta {
-    font-size:   0.75rem;
-    color:       var(--text-secondary);
-    display:     flex;
-    align-items: center;
-    gap:         0.3rem;
-    white-space: nowrap;
-    overflow:    hidden;
+.ledger-card__meta {
+    font-size:  0.75rem;
+    color:      var(--text-secondary);
+    line-height:1.3;
+    display:    flex;
+    align-items:center;
+    gap:        0.3rem;
+    white-space:nowrap;
+    overflow:   hidden;
     text-overflow: ellipsis;
 }
 
-.lc-meta__sep {
-    color: var(--border-color);
-}
-
-/* ── Date column ────────────────────────────────────────────────────────── */
-
-.lc-date {
+/* ── Date group ──────────────────────────────────────────────────────────────── */
+.ledger-card__date {
     display:     flex;
     align-items: center;
     gap:         0.35rem;
-    font-size:   0.8rem;
+    font-size:   0.78rem;
     color:       var(--text-secondary);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-.lc-date i { font-size: 0.72rem; }
+.ledger-card__date i {
+    font-size:  0.72rem;
+    opacity:    0.65;
+    flex-shrink:0;
+}
 
-/* ── Points ─────────────────────────────────────────────────────────────── */
+/* ── Status group ────────────────────────────────────────────────────────────── */
+.ledger-card__status { flex-shrink: 0; }
 
-.lc-pts {
-    font-size:   0.875rem;
-    font-weight: 700;
-    white-space: nowrap;
+/* ── Action group ────────────────────────────────────────────────────────────── */
+.ledger-card__action { flex-shrink: 0; }
+
+/* ── Points group ────────────────────────────────────────────────────────────── */
+.ledger-card__points {
     flex-shrink: 0;
-    min-width:   4rem;
+    min-width:   72px;
     text-align:  right;
-    display:     flex;
+}
+
+/* Earned points — green */
+.points-value--earned {
+    display:     inline-flex;
     align-items: baseline;
-    gap:         0.2rem;
-    justify-content: flex-end;
+    gap:         0.15rem;
+    font-size:   0.95rem;
+    font-weight: 800;
+    color:       #198754;
+    letter-spacing: -0.015em;
 }
 
-.lc-pts__label {
-    font-size:   0.68rem;
-    font-weight: 500;
-    opacity:     0.65;
+.points-value__unit {
+    font-size:  0.68rem;
+    font-weight:600;
+    opacity:    0.75;
 }
 
-.lc-pts--approved { color: #198754; }
-.lc-pts--pending  { color: var(--text-secondary); font-size: 1.1rem; }
-.lc-pts--rejected { color: var(--text-secondary); }
-
-
-/* =============================================================================
-   10. MOBILE LAYOUT (<768px)
-   On small screens the ledger-card becomes a column stack:
-     Row 1: [icon] [title+meta]       — always at top
-     Row 2: hidden (desktop columns)
-     Row 3: .ledger-card__mobile-footer [date | badge | pts]
-
-   The desktop .lc-date is hidden; its twin inside __mobile-footer is shown.
-============================================================================= */
-
-/* Desktop: hide the mobile-footer entirely */
-.ledger-card__mobile-footer {
-    display: none;
-}
-
-@media (max-width: 767.98px) {
-    /* Switch card to column layout */
-    .ledger-card__body {
-        flex-wrap:   wrap;
-        align-items: flex-start;
-        gap:         0.75rem;
-    }
-
-    /* Title+meta fill the row beside the icon */
-    .lc-details { flex: 1; }
-
-    /* Hide the desktop-only columns — they reappear in the mobile footer */
-    .lc-date,
-    .ledger-card__body > .status-badge,
-    .ledger-card__body > .lc-pts {
-        display: none;
-    }
-
-    /* Show the mobile footer bar */
-    .ledger-card__mobile-footer {
-        display:      flex;
-        align-items:  center;
-        gap:          0.6rem;
-        flex-wrap:    wrap;
-        padding-top:  0.75rem;
-        border-top:   1px solid var(--border-color);
-        margin-top:   0.25rem;
-    }
-
-    /* Date inside footer — slightly smaller */
-    .lc-date--mobile {
-        display:   flex;
-        font-size: 0.75rem;
-        color:     var(--text-secondary);
-        gap:       0.3rem;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    /* Points pushed to the far right inside footer */
-    .ledger-card__mobile-footer .lc-pts {
-        margin-left: auto;
-    }
-
-    /* Rejection panel stays full-width — no adjustment needed */
-}
-
-
-/* =============================================================================
-   11. REJECTION EXPLAINER PANEL
-   Only rendered for status='rejected' with a non-empty rejection_reason.
-   Dashed top border + red icon + reason text — clearly branded as an error state
-   without being alarming. The student should understand, not feel punished.
-============================================================================= */
-
-.ledger-card__rejection {
-    display:     flex;
-    align-items: flex-start;
-    gap:         0.6rem;
-    border-top:  1px dashed var(--border-color);
-    margin-top:  1rem;
-    padding-top: 0.75rem;
-}
-
-.lc-rejection__icon {
-    color:       #dc3545;
-    font-size:   0.9rem;
-    flex-shrink: 0;
-    margin-top:  0.1rem; /* optically align with first line of text */
-}
-
-.lc-rejection__text {
-    font-size:   0.82rem;
-    color:       var(--text-secondary);
-    line-height: 1.55;
-    margin:      0;
-    font-style:  italic;
-}
-
-[data-theme="dark"] .lc-rejection__icon { color: #f07070; }
-[data-theme="dark"] .lc-rejection__text { color: var(--text-secondary); }
-
-
-/* =============================================================================
-   12. EMPTY & NO-RESULTS STATES
-============================================================================= */
-
-/* Full-page empty state — student has zero submissions */
-.sl-empty {
-    display:        flex;
-    flex-direction: column;
-    align-items:    center;
-    text-align:     center;
-    padding:        4rem 2rem 5rem;
-    gap:            0.65rem;
-    background-color: var(--bg-card);
-    border:           1px solid var(--border-color);
-    border-radius:    12px;
-}
-
-[data-theme="light"] .sl-empty,
-:root .sl-empty {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.sl-empty__icon {
-    font-size:     2.8rem;
-    color:         var(--border-color);
-    margin-bottom: 0.25rem;
-    animation:     sl-pulse 3s ease-in-out infinite;
-}
-
-@keyframes sl-pulse {
-    0%, 100% { opacity: 0.5; transform: scale(1);    }
-    50%       { opacity: 0.8; transform: scale(1.05); }
-}
-
-.sl-empty__title {
-    font-size:   1.05rem;
-    font-weight: 700;
-    color:       var(--text-primary);
-    margin:      0;
-}
-
-.sl-empty__body {
-    font-size:  0.875rem;
-    color:      var(--text-secondary);
-    max-width:  400px;
-    line-height:1.6;
-    margin:     0;
-}
-
-/* JS-driven "no results" — shown when filter pill yields zero visible cards */
-.sl-no-results {
-    display:     flex;
+/* Pending — muted amber with hourglass */
+.points-value--pending {
+    display:     inline-flex;
     align-items: center;
-    gap:         0.5rem;
-    padding:     1.5rem 1.25rem;
-    font-size:   0.875rem;
+    gap:         0.28rem;
+    font-size:   0.8rem;
+    font-weight: 600;
     color:       var(--text-secondary);
-    background-color: var(--bg-card);
-    border:      1px solid var(--border-color);
-    border-radius: 12px;
 }
 
-.sl-no-results i { color: var(--text-muted, #8C9097); }
+.points-value--pending i { font-size: 0.72rem; }
+
+/* Nil — zero, greyed out */
+.points-value--nil {
+    font-size:  0.8rem;
+    font-weight:500;
+    color:      var(--text-secondary);
+    opacity:    0.6;
+}
 
 
 /* =============================================================================
-   13. SHARED: STATUS BADGES
-   Exact copies of dashboard.css §7 — keeping them in sync visually.
-   These are duplicated deliberately so submissions.css is self-contained.
-============================================================================= */
+   10. STATUS BADGES
+   Identical values to dashboard.css — full cross-page continuity.
+   ============================================================================= */
 
 .status-badge {
-    display:      inline-flex;
-    align-items:  center;
-    gap:          0.3rem;
-    font-size:    0.72rem;
-    font-weight:  600;
-    padding:      0.28rem 0.65rem;
+    display:     inline-flex;
+    align-items: center;
+    gap:         0.3rem;
+    font-size:   0.72rem;
+    font-weight: 600;
+    padding:     0.28rem 0.65rem;
     border-radius:20px;
-    white-space:  nowrap;
-    flex-shrink:  0;
+    white-space: nowrap;
 }
 
 .badge--approved {
@@ -719,69 +598,260 @@
     border:           1px solid rgba(25, 135, 84, 0.25);
 }
 
-[data-theme="dark"] .badge--approved {
-    background-color: rgba(25, 135, 84, 0.18);
-    color:            #4caf82;
-}
-
 .badge--pending {
     background-color: rgba(240, 165, 0, 0.12);
     color:            #a07000;
     border:           1px solid rgba(240, 165, 0, 0.25);
 }
 
-[data-theme="dark"] .badge--pending {
-    background-color: rgba(240, 165, 0, 0.15);
-    color:            #f0c040;
-}
-
 .badge--rejected {
-    background-color: rgba(220, 53, 69, 0.1);
+    background-color: rgba(220, 53, 69, 0.10);
     color:            #dc3545;
     border:           1px solid rgba(220, 53, 69, 0.22);
 }
 
-[data-theme="dark"] .badge--rejected {
-    background-color: rgba(220, 53, 69, 0.15);
-    color:            #f07070;
+[data-theme="dark"] .badge--approved { background-color: rgba(25, 135, 84, 0.18); color: #4caf82; }
+[data-theme="dark"] .badge--pending  { background-color: rgba(240, 165, 0, 0.15); color: #f0c040; }
+[data-theme="dark"] .badge--rejected { background-color: rgba(220, 53, 69, 0.15); color: #f07070; }
+
+
+/* =============================================================================
+   11. VIEW PROOF GHOST BUTTON
+   Ghost outline style — clearly secondary to the status badge.
+   ============================================================================= */
+
+.btn-view-proof {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.35rem;
+    padding:          0.3rem 0.75rem;
+    font-size:        0.78rem;
+    font-weight:      600;
+    color:            var(--accent-secondary);
+    background:       transparent;
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 35%, var(--border-color));
+    border-radius:    6px;
+    text-decoration:  none;
+    white-space:      nowrap;
+    min-height:       30px;
+    transition:       background-color 0.15s ease, border-color 0.15s ease,
+                      color 0.15s ease;
+}
+
+.btn-view-proof:hover {
+    background-color: color-mix(in srgb, var(--accent-secondary) 7%, var(--bg-card));
+    border-color:     var(--accent-secondary);
+    color:            var(--accent-secondary);
+    text-decoration:  none;
+}
+
+.btn-view-proof i { font-size: 0.72rem; }
+
+/* Disabled state — no file attached */
+.btn-view-proof--disabled {
+    color:        var(--text-secondary);
+    border-color: var(--border-color);
+    opacity:      0.5;
+    cursor:       default;
+    pointer-events: none;
 }
 
 
 /* =============================================================================
-   14. DARK MODE OVERRIDES
-   Variable inheritance handles most of dark mode automatically.
-   These rules handle edge cases requiring an explicit nudge.
-============================================================================= */
+   12. REJECTION EXPLAINER SECTION
+   Visible only on cards with status = 'rejected'.
+   Sits below the main row, separated by a dashed border.
+   ============================================================================= */
+
+.ledger-card__rejection {
+    display:         flex;
+    align-items:     flex-start;
+    gap:             0.6rem;
+    border-top:      1px dashed var(--border-color);
+    margin-top:      1rem;
+    padding-top:     0.85rem;
+    background:      rgba(220, 53, 69, 0.03);
+    border-radius:   0 0 8px 8px;
+    /* Negative margin to bleed into card padding edges on sides and bottom */
+    margin-left:     -1.25rem;
+    margin-right:    -1.25rem;
+    margin-bottom:   -1.25rem;
+    padding-left:    1.25rem;
+    padding-right:   1.25rem;
+    padding-bottom:  1rem;
+}
+
+.ledger-card__rejection-icon {
+    font-size:  0.9rem;
+    color:      var(--accent-primary);
+    flex-shrink:0;
+    margin-top: 1px; /* optical cap-height alignment */
+    line-height:1.45;
+}
+
+.ledger-card__rejection-label {
+    display:     block;
+    font-size:   0.72rem;
+    font-weight: 700;
+    color:       var(--accent-primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+    line-height:  1;
+}
+
+.ledger-card__rejection-text {
+    display:    block;
+    font-size:  0.83rem;
+    color:      var(--text-secondary);
+    line-height:1.55;
+}
+
+/* No-reason variant — slightly softer styling */
+.ledger-card__rejection--no-reason {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.ledger-card__rejection--no-reason .ledger-card__rejection-icon {
+    color: var(--text-secondary);
+}
+
+
+/* =============================================================================
+   13. EMPTY STATE
+   Shown when student has zero submissions at all.
+   ============================================================================= */
+
+.ledger-empty {
+    display:          flex;
+    flex-direction:   column;
+    align-items:      center;
+    text-align:       center;
+    padding:          4rem 2rem;
+    gap:              0.85rem;
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    14px;
+    animation:        sub-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+[data-theme="light"] .ledger-empty,
+:root .ledger-empty {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@keyframes sub-fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+.ledger-empty__icon {
+    font-size:     2.75rem;
+    color:         var(--border-color);
+    line-height:   1;
+    margin-bottom: 0.25rem;
+    animation:     empty-pulse 3s ease-in-out infinite;
+}
+
+@keyframes empty-pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1);    }
+    50%       { opacity: 0.8; transform: scale(1.05); }
+}
+
+.ledger-empty__title {
+    font-size:   1.1rem;
+    font-weight: 700;
+    color:       var(--text-primary);
+    margin:      0;
+}
+
+.ledger-empty__body {
+    font-size:   0.875rem;
+    color:       var(--text-secondary);
+    line-height: 1.65;
+    max-width:   420px;
+    margin:      0;
+}
+
+
+/* =============================================================================
+   14. NO-RESULTS STATE
+   Shown by JS when a filter pill returns 0 matching cards.
+   ============================================================================= */
+
+.ledger-no-results {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    text-align:     center;
+    gap:            0.5rem;
+    padding:        3rem 2rem;
+    color:          var(--text-secondary);
+}
+
+.ledger-no-results i {
+    font-size:   1.75rem;
+    opacity:     0.4;
+    line-height: 1;
+}
+
+.ledger-no-results p {
+    font-size: 0.875rem;
+    margin:    0;
+}
+
+
+/* =============================================================================
+   15. DARK MODE REFINEMENTS
+   Most adapt automatically via CSS variables. Explicit overrides only.
+   ============================================================================= */
 
 [data-theme="dark"] .ledger-card {
-    box-shadow: none;
+    background-color: var(--bg-card);
+    border-color:     var(--border-color);
+    box-shadow:       none;
 }
 
-[data-theme="dark"] .sl-empty {
-    box-shadow: none;
+[data-theme="dark"] .ledger-card:hover {
+    box-shadow:   none;
+    border-color: color-mix(in srgb, var(--accent-secondary) 35%, var(--border-color));
 }
 
-[data-theme="dark"] .sl-no-results {
-    box-shadow: none;
+[data-theme="dark"] .ledger-card__rejection {
+    background:      rgba(220, 53, 69, 0.05);
+    border-top-color:var(--border-color);
 }
 
-/* Icon circles: slightly brighter tint in dark mode so they don't disappear */
-[data-theme="dark"] .lc-icon.icon--research {
-    background-color: color-mix(in srgb, #9d6ecc 12%, var(--bg-card));
-    color:            #9d6ecc;
-    border-color:     color-mix(in srgb, #9d6ecc 25%, transparent);
+[data-theme="dark"] .ledger-empty {
+    background-color: var(--bg-card);
+    border-color:     var(--border-color);
+    box-shadow:       none;
 }
 
-[data-theme="dark"] .lc-icon.icon--extra {
-    color: #f0c040;
-    background-color: color-mix(in srgb, #f0c040 10%, var(--bg-card));
-    border-color:     color-mix(in srgb, #f0c040 20%, transparent);
+[data-theme="dark"] .filter-pill {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+    color:            var(--text-secondary);
+}
+
+[data-theme="dark"] .filter-pill:hover {
+    background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .points-value--earned { color: #4caf82; }
+
+[data-theme="dark"] .btn-view-proof {
+    border-color: color-mix(in srgb, var(--accent-secondary) 30%, var(--border-color));
+}
+
+[data-theme="dark"] .lb-stat-block {
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
 }
 
 
 /* =============================================================================
-   15. ACCESSIBILITY & PRINT
-============================================================================= */
+   16. ACCESSIBILITY & PRINT
+   ============================================================================= */
 
 a:focus-visible,
 button:focus-visible {
@@ -790,28 +860,42 @@ button:focus-visible {
     border-radius:  4px;
 }
 
-/* Strip browser default focus ring on pills — our custom ring replaces it */
-.sl-pill:focus-visible {
-    outline:        2px solid var(--accent-primary);
-    outline-offset: 2px;
+/* Focus ring — keyboard navigation only.
+   :focus (non-keyboard) gets no ring; :focus-visible (keyboard tab) gets one.
+   !important beats any browser UA stylesheet specificity. */
+.filter-pill:focus {
+    outline:    none !important;
+    box-shadow: none !important;
+}
+
+.filter-pill:focus-visible {
+    outline:        2px solid var(--accent-primary) !important;
+    outline-offset: 2px !important;
+    box-shadow:     none !important;
 }
 
 @media print {
-    .sl-header__action,
-    .sl-strip,
-    .ledger-card__mobile-footer {
+    .sub-header .btn-new-submission,
+    .filter-strip {
         display: none !important;
     }
 
-    .sl-wrapper { padding-bottom: 2rem; }
+    .sub-wrapper { padding-bottom: 1rem; }
 
     .ledger-card {
-        border-radius: 0 !important;
         box-shadow:    none !important;
-        transform:     none !important;
-        page-break-inside: avoid;
+        break-inside:  avoid;
+        border:        1px solid #ccc !important;
+        border-radius: 0 !important;
+        margin-bottom: 0.5rem;
     }
 
-    /* Ensure rejection reason always prints */
-    .ledger-card__rejection { display: flex !important; }
+    .ledger-card::before { display: none !important; }
+
+    .btn-view-proof {
+        text-decoration: underline !important;
+        color:           #004466 !important;
+        border:          none !important;
+        padding:         0 !important;
+    }
 }

@@ -1,0 +1,207 @@
+/*
+ * =============================================================================
+ * THE ZENITH VIEW — PWA Install Banner
+ * /assets/css/pwa-banner.css
+ *
+ * BUG FIXES IN THIS VERSION:
+ *
+ *   FIX 1 — DESKTOP VISIBILITY
+ *     Old: @media (min-width:768px) shrank/centred the banner.
+ *     New: display:none !important above 768px. Gone completely.
+ *
+ *   FIX 2 — NOT FIXED TO VIEWPORT (scrolled with page)
+ *     Root cause: style.css sets overflow-x:hidden !important on BOTH
+ *     <html> AND <body>. When overflow is set on the root elements the
+ *     browser promotes <body> to the scroll container, which means
+ *     position:fixed children position themselves relative to <body>
+ *     (i.e. the document) instead of the viewport, so they scroll.
+ *     Fix: position:fixed !important + bottom:0 !important override it.
+ *
+ *   FIX 3 — BUTTONS NOT CLICKABLE
+ *     Root cause: .mobile-drawer has z-index:1050 (same as the old banner).
+ *     Even closed, the drawer overlay (z-index:1040) can sit above the banner
+ *     and absorb taps. pointer-events:none on the hidden banner shell also
+ *     bled into children incorrectly.
+ *     Fix: z-index:99999 !important, explicit pointer-events:auto !important
+ *     on every interactive child.
+ *
+ * DESIGN SYSTEM (unchanged):
+ *   Zero hardcoded bg/text colours. All CSS variables from style.css.
+ *   #ffffff on Install button is intentionally hardcoded (white on red
+ *   is correct in both light and dark themes).
+ * =============================================================================
+ */
+
+
+/* =============================================================================
+   FIX 1 — HIDE COMPLETELY ON DESKTOP (>= 768px)
+   This rule is placed first so nothing below can accidentally override it.
+   ============================================================================= */
+
+@media (min-width: 768px) {
+    .pwa-banner {
+        display: none !important;
+    }
+}
+
+
+/* =============================================================================
+   SHELL — mobile only (< 768px)
+   ============================================================================= */
+
+.pwa-banner {
+    /* FIX 2: !important defeats the overflow-x:hidden on html/body in
+       style.css that was making position:fixed scroll with the document. */
+    position: fixed  !important;
+    bottom:   0      !important;
+    left:     0;
+    width:    100%;
+
+    /* FIX 3: highest z-index in project is mobile-drawer at 1050.
+       99999 guarantees the banner always sits above every other layer. */
+    z-index: 99999 !important;
+
+    /* Layout */
+    display:     flex;
+    align-items: center;
+    gap:         0.85rem;
+    padding:     1rem 1.25rem;
+
+    /* Colours */
+    background-color: var(--bg-card);
+    border-top:       1px solid var(--border-color);
+
+    /* Shape */
+    border-radius: 20px 20px 0 0;
+
+    /* Upward shadow */
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.10),
+                0 -1px 6px  rgba(0, 0, 0, 0.06);
+
+    /* Hidden by default */
+    transform:      translateY(100%);
+    transition:     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.pwa-banner--show {
+    transform:      translateY(0);
+    pointer-events: auto;
+}
+
+
+/* =============================================================================
+   ICON — not interactive
+   ============================================================================= */
+
+.pwa-banner__icon {
+    width:          40px;
+    height:         40px;
+    border-radius:  10px;
+    flex-shrink:    0;
+    object-fit:     cover;
+    pointer-events: none;
+}
+
+
+/* =============================================================================
+   TEXT — not interactive
+   ============================================================================= */
+
+.pwa-banner__text {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.15rem;
+    flex:           1;
+    min-width:      0;
+    pointer-events: none;
+}
+
+.pwa-banner__title {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         var(--text-primary);
+    line-height:   1.3;
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+}
+
+.pwa-banner__subtitle {
+    font-size:   0.78rem;
+    font-weight: 400;
+    color:       var(--text-secondary);
+    line-height: 1.4;
+}
+
+
+/* =============================================================================
+   INSTALL BUTTON
+   ============================================================================= */
+
+.pwa-banner__btn {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    flex-shrink:      0;
+    height:           40px;
+    padding:          0 1.2rem;
+    font-family:      inherit;
+    font-size:        0.85rem;
+    font-weight:      700;
+    color:            #ffffff;
+    background:       var(--accent-primary);
+    border:           none;
+    border-radius:    8px;
+    cursor:           pointer;
+    white-space:      nowrap;
+    pointer-events:   auto !important;
+    transition:       background-color 0.15s ease, transform 0.12s ease;
+    outline:          none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-banner__btn:hover  { background: var(--accent-primary-hover, #9A1925); transform: translateY(-1px); }
+.pwa-banner__btn:active { transform: translateY(0); }
+.pwa-banner__btn:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius:  8px;
+}
+.pwa-banner__btn--hidden { display: none !important; }
+
+
+/* =============================================================================
+   CLOSE BUTTON
+   ============================================================================= */
+
+.pwa-banner__close {
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    flex-shrink:      0;
+    width:            36px;
+    height:           36px;
+    background:       transparent;
+    border:           none;
+    border-radius:    50%;
+    cursor:           pointer;
+    color:            var(--text-muted);
+    font-size:        1.2rem;
+    line-height:      1;
+    pointer-events:   auto !important;
+    transition:       color 0.15s ease, background-color 0.15s ease;
+    outline:          none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-banner__close:hover {
+    color:            var(--text-secondary);
+    background-color: color-mix(in srgb, var(--border-color) 40%, var(--bg-card));
+}
+
+.pwa-banner__close:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 2px;
+    border-radius:  50%;
+}

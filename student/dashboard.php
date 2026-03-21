@@ -527,9 +527,11 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?php if ($activity['status'] === 'approved'): ?>
                                         <span class="points-value">+<?= number_format((int) $activity['points_awarded']) ?></span>
                                     <?php elseif ($activity['status'] === 'pending'): ?>
-                                        <span class="points-tbd" aria-label="Points pending review">—</span>
+                                        <span class="text-muted" style="font-size: 0.8rem; font-weight: 500;" aria-label="Points pending review">
+                                            <i class="bi bi-hourglass-split me-1" style="font-size: 0.75rem;" aria-hidden="true"></i>TBD
+                                        </span>
                                     <?php else: ?>
-                                        <span class="points-nil" aria-label="No points awarded">0</span>
+                                        <span class="points-nil" aria-label="No points awarded">0 pts</span>
                                     <?php endif; ?>
                                 </td>
 

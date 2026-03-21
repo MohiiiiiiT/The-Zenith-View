@@ -35,7 +35,7 @@ if ($session_name) {
 $role_labels = [
     'student' => 'Student',
     'teacher' => 'Faculty',
-    'admin'   => 'Admin',
+    'admin'   => 'System Administrator',
 ];
 $role_label = $role_labels[$session_role] ?? '';
 
@@ -166,12 +166,11 @@ function nav_active(string $page, string $current): string {
                 <li><a href="<?= BASE_URL ?>/submit_ticket.php"           class="nav-link <?= nav_active('submit_ticket',$current_page) ?>">Support</a></li>
 
             <?php elseif ($session_role === 'admin'): ?>
-                <li><a href="<?= BASE_URL ?>/index.php"                   class="nav-link <?= nav_active('index',         $current_page) ?>">Home</a></li>
-                <li><a href="<?= BASE_URL ?>/leaderboard.php"             class="nav-link <?= nav_active('leaderboard',   $current_page) ?>">Leaderboard</a></li>
-                <li><a href="<?= BASE_URL ?>/teacher/review_queue.php"    class="nav-link <?= nav_active('review_queue',  $current_page) ?>">Review Queue</a></li>
-                <li><a href="<?= BASE_URL ?>/admin/manage_users.php"      class="nav-link <?= nav_active('manage_users',  $current_page) ?>">Users</a></li>
-                <li><a href="<?= BASE_URL ?>/admin/settings.php"          class="nav-link <?= nav_active('settings',      $current_page) ?>">Settings</a></li>
-                <li><a href="<?= BASE_URL ?>/submit_ticket.php"           class="nav-link <?= nav_active('submit_ticket', $current_page) ?>">Support</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/dashboard.php"        class="nav-link <?= nav_active('dashboard',    $current_page) ?>">Dashboard</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/manage_users.php"     class="nav-link <?= nav_active('manage_users', $current_page) ?>">Users</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/settings.php"         class="nav-link <?= nav_active('settings',     $current_page) ?>">Settings</a></li>
+                <li><a href="<?= BASE_URL ?>/leaderboard.php"            class="nav-link <?= nav_active('leaderboard',  $current_page) ?>">Leaderboard</a></li>
+                <li><a href="<?= BASE_URL ?>/submit_ticket.php"          class="nav-link <?= nav_active('submit_ticket',$current_page) ?>">Support</a></li>
 
             <?php endif; ?>
         </ul>
@@ -184,10 +183,13 @@ function nav_active(string $page, string $current): string {
 
             <?php if ($is_logged_in): ?>
 
-                <div class="nav-user-pill" title="Logged in as <?= $session_name ?>">
+                <div class="nav-user-pill" title="Logged in as <?= $session_name ?> — <?= $role_label ?>">
                     <span class="nav-user-avatar" aria-hidden="true"><?= $initials ?: '?' ?></span>
                     <span class="nav-user-info">
                         <span class="nav-user-name"><?= $session_name ?></span>
+                        <?php if ($role_label): ?>
+                        <span class="nav-user-role"><?= $role_label ?></span>
+                        <?php endif; ?>
                     </span>
                 </div>
 
@@ -315,28 +317,23 @@ function nav_active(string $page, string $current): string {
 
             <?php elseif ($session_role === 'admin'): ?>
                 <li>
-                    <a href="<?= BASE_URL ?>/index.php" class="drawer-link <?= nav_active('index', $current_page) ?>">
-                        <i class="bi bi-house-door"></i> Home
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/leaderboard.php" class="drawer-link <?= nav_active('leaderboard', $current_page) ?>">
-                        <i class="bi bi-trophy"></i> Leaderboard
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/teacher/review_queue.php" class="drawer-link <?= nav_active('review_queue', $current_page) ?>">
-                        <i class="bi bi-clipboard2-check"></i> Review Queue
+                    <a href="<?= BASE_URL ?>/admin/dashboard.php" class="drawer-link <?= nav_active('dashboard', $current_page) ?>">
+                        <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                 </li>
                 <li>
                     <a href="<?= BASE_URL ?>/admin/manage_users.php" class="drawer-link <?= nav_active('manage_users', $current_page) ?>">
-                        <i class="bi bi-people"></i> Manage Users
+                        <i class="bi bi-people"></i> Users
                     </a>
                 </li>
                 <li>
                     <a href="<?= BASE_URL ?>/admin/settings.php" class="drawer-link <?= nav_active('settings', $current_page) ?>">
                         <i class="bi bi-sliders"></i> Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= BASE_URL ?>/leaderboard.php" class="drawer-link <?= nav_active('leaderboard', $current_page) ?>">
+                        <i class="bi bi-trophy"></i> Leaderboard
                     </a>
                 </li>
                 <li class="drawer-divider"></li>

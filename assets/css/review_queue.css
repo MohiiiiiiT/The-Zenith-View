@@ -1,0 +1,1072 @@
+/*
+ * =============================================================================
+ * THE ZENITH VIEW — /assets/css/review_queue.css
+ * Faculty Review Queue Page Stylesheet
+ *
+ * DESIGN SYSTEM RULES:
+ *   - Zero hardcoded colours. All values reference CSS variables from style.css.
+ *   - var(--text-heading) for ALL card titles and student names.
+ *   - var(--bg-subtle) for the action area background (separates from card body).
+ *   - .zv-card shell uses ONLY background-color, border, border-radius, overflow.
+ *     Box-shadow is deliberately omitted — style.css's --card-shadow and the
+ *     main theme's glass effect apply cleanly without interference.
+ *   - No Bootstrap semantic colour classes (.btn-success, .bg-light, etc.).
+ *   - Mobile-first. Base = smallest screen. @media scales up.
+ *
+ * TABLE OF CONTENTS
+ *   01. Wrapper
+ *   02. Flash Alert
+ *   03. Page Header
+ *   04. Stat Pill
+ *   05. Review Card Shell (.zv-card)
+ *   06. Card Header — Student Identity
+ *   07. Dept Badge & Year Chip
+ *   08. Card Body — Achievement Details
+ *   09. View Proof Button
+ *   10. Card Actions Area
+ *   11. Action Trigger Row (the two compact buttons always shown)
+ *   12. Action Collapse Panels
+ *   13. Action Labels
+ *   14. Points Input
+ *   15. Quick-Reject Chips
+ *   16. Reject Textarea
+ *   17. Submit Buttons — Approve & Reject
+ *   18. Proof Lightbox Modal
+ *   19. Empty State
+ *   20. Dark Mode Refinements
+ *   21. Accessibility & Print
+ * =============================================================================
+ */
+
+
+/* =============================================================================
+   01. WRAPPER
+   ============================================================================= */
+
+.rq-wrapper {
+    max-width: 1320px;
+    margin:    0 auto;
+    padding:   1.5rem 1rem 4rem;
+}
+
+@media (min-width: 768px)  { .rq-wrapper { padding: 2rem 1.5rem 4rem; } }
+@media (min-width: 1200px) { .rq-wrapper { padding: 2.5rem 2rem 5rem; } }
+
+
+/* =============================================================================
+   02. FLASH ALERT
+   ============================================================================= */
+
+.rq-alert {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           0.65rem;
+    padding:       0.9rem 1.1rem;
+    border-radius: 10px;
+    font-size:     0.875rem;
+    font-weight:   500;
+    line-height:   1.5;
+    margin-bottom: 1.5rem;
+}
+
+.rq-alert i        { flex-shrink: 0; margin-top: 2px; font-size: 0.9rem; }
+.rq-alert span     { flex: 1; }
+
+.rq-alert--success {
+    background: rgba(25, 135, 84, 0.1);
+    border:     1px solid rgba(25, 135, 84, 0.28);
+    color:      #198754;
+}
+.rq-alert--warning {
+    background: rgba(240, 165, 0, 0.1);
+    border:     1px solid rgba(240, 165, 0, 0.28);
+    color:      #a07000;
+}
+.rq-alert--error {
+    background: color-mix(in srgb, var(--accent-primary) 8%, var(--bg-card));
+    border:     1px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+    color:      var(--accent-primary);
+}
+
+.rq-alert__dismiss {
+    background:  transparent;
+    border:      none;
+    cursor:      pointer;
+    padding:     0 0 0 0.5rem;
+    font-size:   0.75rem;
+    color:       inherit;
+    opacity:     0.65;
+    flex-shrink: 0;
+    outline:     none;
+    transition:  opacity 0.15s ease;
+}
+.rq-alert__dismiss:hover { opacity: 1; }
+
+
+/* =============================================================================
+   03. PAGE HEADER
+   ============================================================================= */
+
+.rq-header {
+    display:         flex;
+    align-items:     flex-start;
+    justify-content: space-between;
+    gap:             1.25rem;
+    flex-wrap:       wrap;
+    margin-bottom:   2rem;
+}
+
+.rq-header__eyebrow {
+    display:        block;
+    font-size:      0.68rem;
+    font-weight:    600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color:          var(--accent-primary);
+    margin:         0 0 0.35rem;
+}
+
+.rq-header__title {
+    font-size:      clamp(1.6rem, 4vw, 2.1rem);
+    font-weight:    800;
+    color:          var(--text-primary) !important;
+    margin:         0 0 0.45rem;
+    letter-spacing: -0.03em;
+    line-height:    1.15;
+}
+
+.rq-header__sub {
+    font-size:   0.9rem;
+    color:       var(--text-secondary);
+    line-height: 1.65;
+    margin:      0;
+}
+
+.rq-header__count {
+    font-weight: 700;
+    color:       var(--text-heading);
+    font-size:   1rem;
+}
+
+
+/* =============================================================================
+   04. STAT PILL
+   ============================================================================= */
+
+.rq-header__stat { flex-shrink: 0; display: flex; gap: 0.75rem; }
+
+.rq-stat-pill {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.45rem;
+    padding:          0.55rem 1rem;
+    background-color: color-mix(in srgb, var(--accent-primary) 8%, var(--bg-card));
+    border:           1px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+    border-radius:    20px;
+    font-size:        0.82rem;
+    font-weight:      600;
+    color:            var(--accent-primary);
+    white-space:      nowrap;
+}
+
+.rq-stat-pill i          { font-size: 0.75rem; }
+.rq-stat-pill__value     { font-size: 1rem; font-weight: 800; letter-spacing: -0.015em; }
+.rq-stat-pill__label     { font-size: 0.72rem; font-weight: 500; opacity: 0.8; }
+
+@media (max-width: 479px) { .rq-header__stat { display: none; } }
+
+
+/* =============================================================================
+   05. REVIEW CARD SHELL (.zv-card)
+   Only structural properties here. No box-shadow override — the theme's
+   --card-shadow from style.css applies without interference.
+   ============================================================================= */
+
+.zv-card {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    14px;
+    overflow:         hidden;
+    display:          flex;
+    flex-direction:   column;
+    /* height:100% intentionally omitted — align-items-start on the row
+       lets each card be exactly as tall as its content. */
+    transition:       border-color 0.2s ease;
+}
+
+/* Suppress any ::before gradient border injected by the main stylesheet */
+.zv-card::before {
+    display: none !important;
+}
+
+.zv-card:hover {
+    border-color: color-mix(in srgb, var(--accent-primary) 30%, var(--border-color));
+}
+
+
+/* =============================================================================
+   06. CARD HEADER — Student Identity
+   ============================================================================= */
+
+.zv-card__header {
+    display:          flex;
+    align-items:      flex-start;
+    justify-content:  space-between;
+    gap:              0.75rem;
+    padding:          0.9rem 1.1rem;
+    border-bottom:    1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-subtle) 60%, var(--bg-card));
+}
+
+.zv-card__identity {
+    display:     flex;
+    align-items: center;
+    gap:         0.65rem;
+    min-width:   0;
+    flex:        1;
+}
+
+.zv-card__avatar {
+    width:            36px;
+    height:           36px;
+    flex-shrink:      0;
+    border-radius:    50%;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        0.85rem;
+    font-weight:      800;
+    color:            var(--text-heading);
+    background-color: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
+    border:           1.5px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+    user-select:      none;
+}
+
+.zv-card__student-info {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.25rem;
+    min-width:      0;
+}
+
+.zv-card__student-name {
+    font-size:     0.9rem;
+    font-weight:   700;
+    color:         var(--text-heading);
+    line-height:   1.25;
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+}
+
+.zv-card__student-meta {
+    display:     flex;
+    align-items: center;
+    gap:         0.35rem;
+    flex-wrap:   wrap;
+}
+
+.zv-card__date {
+    display:     flex;
+    align-items: center;
+    gap:         0.3rem;
+    font-size:   0.7rem;
+    color:       var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.zv-card__date i { font-size: 0.62rem; opacity: 0.7; }
+
+
+/* =============================================================================
+   07. DEPT BADGE & YEAR CHIP
+   ============================================================================= */
+
+.dept-badge {
+    display:          inline-flex;
+    align-items:      center;
+    padding:          0.12rem 0.5rem;
+    font-size:        0.65rem;
+    font-weight:      700;
+    letter-spacing:   0.05em;
+    text-transform:   uppercase;
+    border-radius:    4px;
+    background-color: color-mix(in srgb, var(--text-heading) 12%, var(--bg-card));
+    color:            var(--text-heading);
+    border:           1px solid color-mix(in srgb, var(--text-heading) 22%, transparent);
+    white-space:      nowrap;
+}
+
+.year-chip {
+    display:          inline-flex;
+    align-items:      center;
+    padding:          0.12rem 0.45rem;
+    font-size:        0.65rem;
+    font-weight:      600;
+    border-radius:    20px;
+    background-color: var(--bg-subtle);
+    color:            var(--text-secondary);
+    border:           1px solid var(--border-color);
+    white-space:      nowrap;
+}
+
+
+/* =============================================================================
+   08. CARD BODY — Achievement Details
+   Compact padding — body only needs to communicate the achievement, not take
+   up vertical space. .zv-card__body does NOT get flex:1 here so the card
+   height stays tight by default.
+   ============================================================================= */
+
+.zv-card__body {
+    padding: 0.9rem 1.1rem 0.75rem;
+}
+
+.zv-card__achievement-title {
+    font-size:      0.95rem;
+    font-weight:    700;
+    color:          var(--text-heading);
+    margin:         0 0 0.45rem;
+    line-height:    1.35;
+    letter-spacing: -0.01em;
+}
+
+.zv-card__achievement-meta {
+    display:       flex;
+    flex-wrap:     wrap;
+    gap:           0.35rem 0.65rem;
+    margin-bottom: 0.75rem;
+}
+
+.zv-card__category,
+.zv-card__tier {
+    display:     inline-flex;
+    align-items: center;
+    gap:         0.28rem;
+    font-size:   0.75rem;
+    color:       var(--text-secondary);
+    line-height: 1.3;
+}
+
+.zv-card__category i,
+.zv-card__tier i {
+    font-size:   0.68rem;
+    opacity:     0.65;
+    flex-shrink: 0;
+}
+
+
+/* =============================================================================
+   09. VIEW PROOF BUTTON
+   ============================================================================= */
+
+.btn-view-proof {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.4rem;
+    padding:          0.45rem 1rem;
+    font-family:      inherit;
+    font-size:        0.82rem;
+    font-weight:      600;
+    color:            var(--text-heading);
+    background:       color-mix(in srgb, var(--text-heading) 6%, var(--bg-card));
+    border:           1.5px solid color-mix(in srgb, var(--text-heading) 25%, var(--border-color));
+    border-radius:    8px;
+    cursor:           pointer;
+    text-decoration:  none;
+    white-space:      nowrap;
+    width:            100%;
+    justify-content:  center;
+    min-height:       38px;
+    transition:       background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.btn-view-proof:hover {
+    background:      color-mix(in srgb, var(--text-heading) 12%, var(--bg-card));
+    border-color:    var(--text-heading);
+    color:           var(--text-heading);
+    transform:       translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-view-proof i { font-size: 0.82rem; }
+
+.btn-view-proof--none {
+    color:          var(--text-secondary);
+    background:     var(--bg-subtle);
+    border-color:   var(--border-color);
+    opacity:        0.5;
+    cursor:         default;
+    pointer-events: none;
+}
+
+
+/* =============================================================================
+   10. CARD ACTIONS AREA
+   var(--bg-subtle) creates a visual break between the card body and the
+   action controls without introducing any non-theme colour.
+   ============================================================================= */
+
+.zv-card__actions {
+    padding:          0.75rem 1.1rem 0.9rem;
+    border-top:       1px solid var(--border-color);
+    background-color: var(--bg-subtle);
+    margin-top:       auto;   /* pushes actions to the card bottom in equal-height rows */
+}
+
+
+/* =============================================================================
+   11. ACTION TRIGGER ROW
+   Two side-by-side buttons. Always visible. Clicking one collapses the other
+   via rqTogglePanel() in JS before Bootstrap opens the clicked panel.
+   ============================================================================= */
+
+.action-triggers {
+    display: flex;
+    gap:     0.5rem;
+}
+
+/* The approve form must stretch to fill its flex slot so the button
+   is the same width as the reject trigger beside it. */
+.action-approve-form {
+    flex:    1;
+    display: flex;
+}
+
+/* Base trigger style */
+.btn-trigger {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.35rem;
+    flex:            1;              /* equal width, side by side */
+    min-height:      36px;
+    padding:         0 0.75rem;
+    font-family:     inherit;
+    font-size:       0.8rem;
+    font-weight:     700;
+    border-radius:   8px;
+    border:          1.5px solid transparent;
+    cursor:          pointer;
+    white-space:     nowrap;
+    outline:         none;
+    transition:      background-color 0.15s ease, border-color 0.15s ease,
+                     color 0.15s ease, transform 0.12s ease;
+}
+
+.btn-trigger i { font-size: 0.75rem; }
+
+/* Approve trigger — muted green ghost per spec */
+.btn-trigger--approve {
+    color:            #146c43;
+    background-color: rgba(25, 135, 84, 0.08);
+    border-color:     rgba(25, 135, 84, 0.2);
+    font-weight:      600;
+}
+
+.btn-trigger--approve:hover {
+    background-color: rgba(25, 135, 84, 0.13);
+    border-color:     rgba(25, 135, 84, 0.4);
+}
+
+/* No [aria-expanded="true"] filled state — approve is now a submit,
+   not a toggle, so it never carries aria-expanded. */
+
+/* Reject trigger — muted red ghost per spec */
+.btn-trigger--reject {
+    color:            var(--accent-primary);
+    background-color: rgba(183, 32, 46, 0.05);
+    border-color:     rgba(183, 32, 46, 0.2);
+    font-weight:      600;
+}
+
+.btn-trigger--reject:hover {
+    background-color: rgba(183, 32, 46, 0.10);
+    border-color:     rgba(183, 32, 46, 0.40);
+}
+
+.btn-trigger--reject[aria-expanded="true"] {
+    background-color: rgba(183, 32, 46, 0.10);
+    border-color:     rgba(183, 32, 46, 0.50);
+    color:            var(--accent-primary);
+}
+
+
+/* =============================================================================
+   12. ACTION COLLAPSE PANELS
+   Each panel is a Bootstrap .collapse container. It holds one <form>.
+   Top margin creates breathing room between the trigger row and the panel.
+   ============================================================================= */
+
+.action-panel {
+    margin-top: 0.75rem;
+}
+
+.action-panel form {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.6rem;
+}
+
+/* Action row: points input + approve submit side by side */
+.action-row {
+    display:     flex;
+    gap:         0.55rem;
+    flex-wrap:   wrap;
+    align-items: stretch;
+}
+
+
+/* =============================================================================
+   13. ACTION LABELS
+   ============================================================================= */
+
+.action-label {
+    display:        flex;
+    align-items:    center;
+    gap:            0.32rem;
+    font-size:      0.7rem;
+    font-weight:    700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height:    1;
+    margin-bottom:  0;        /* gap on form handles spacing */
+}
+
+.action-label i { font-size: 0.7rem; }
+
+.action-label--approve { color: #198754; }
+.action-label--reject  { color: var(--accent-primary); }
+
+
+/* =============================================================================
+   14. AUTO-SCORE BADGE & APPROVE CONFIRM ROW
+   Replaces the old points number input. The badge shows the pre-calculated
+   points for the tier; the confirm row lays it out next to the submit button.
+   ============================================================================= */
+
+.approve-confirm-row {
+    display:     flex;
+    align-items: center;
+    gap:         0.65rem;
+    flex-wrap:   wrap;
+}
+
+.pts-badge {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.35rem;
+    padding:          0.3rem 0.75rem;
+    font-size:        0.82rem;
+    font-weight:      600;
+    color:            #2e7d32;
+    background-color: rgba(46, 125, 50, 0.08);
+    border:           1px solid rgba(46, 125, 50, 0.28);
+    border-radius:    20px;
+    white-space:      nowrap;
+    flex-shrink:      0;
+}
+
+.pts-badge i      { font-size: 0.72rem; }
+.pts-badge strong { font-size: 0.92rem; font-weight: 800; letter-spacing: -0.01em; }
+
+[data-theme="dark"] .pts-badge {
+    color:            #66bb6a;
+    background-color: rgba(102, 187, 106, 0.1);
+    border-color:     rgba(102, 187, 106, 0.25);
+}
+
+
+/* =============================================================================
+   15. QUICK-REJECT CHIPS
+   ============================================================================= */
+
+.quick-chips {
+    display:       flex;
+    flex-wrap:     wrap;
+    gap:           0.35rem;
+    margin-bottom: 0;
+}
+
+.quick-chip {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.28rem;
+    padding:          0.25rem 0.65rem;
+    font-family:      inherit;
+    font-size:        0.72rem;
+    font-weight:      500;
+    color:            var(--text-secondary);
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    20px;
+    cursor:           pointer;
+    outline:          none;
+    white-space:      nowrap;
+    transition:       background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.quick-chip:hover {
+    background-color: color-mix(in srgb, var(--accent-primary) 6%, var(--bg-card));
+    border-color:     color-mix(in srgb, var(--accent-primary) 35%, var(--border-color));
+    color:            var(--accent-primary);
+}
+
+.quick-chip i { font-size: 0.67rem; }
+
+.quick-chip--active {
+    background-color: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
+    border-color:     var(--accent-primary);
+    color:            var(--accent-primary);
+    font-weight:      600;
+}
+
+
+/* =============================================================================
+   16. REJECT TEXTAREA
+   ============================================================================= */
+
+.reject-textarea {
+    width:            100%;
+    min-height:       80px;
+    padding:          0.6rem 0.8rem;
+    font-family:      inherit;
+    font-size:        0.875rem;
+    color:            var(--text-primary);
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    8px;
+    outline:          none;
+    resize:           vertical;
+    line-height:      1.55;
+    transition:       border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.reject-textarea::placeholder { color: var(--text-muted, #8C9097); font-size: 0.82rem; }
+
+.reject-textarea:focus {
+    border-color:     var(--accent-primary);
+    box-shadow:       0 0 0 3px color-mix(in srgb, var(--accent-primary) 14%, transparent);
+    background-color: var(--bg-card);
+}
+
+
+/* =============================================================================
+   17. SUBMIT BUTTONS — Approve & Reject
+   Muted, professional colours per QA spec:
+     Approve — forest green #2e7d32 (softer than Bootstrap's #198754)
+     Reject  — muted red   #c62828 (matches accent but pulled back from pure red)
+   ============================================================================= */
+
+.btn-approve {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.4rem;
+    min-height:       38px;
+    padding:          0 1.1rem;
+    font-family:      inherit;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            #146c43;
+    background-color: rgba(25, 135, 84, 0.08);
+    border:           1px solid rgba(25, 135, 84, 0.2);
+    border-radius:    8px;
+    cursor:           pointer;
+    outline:          none;
+    white-space:      nowrap;
+    flex-shrink:      0;
+    transition:       background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-approve:hover {
+    background-color: rgba(25, 135, 84, 0.14);
+    border-color:     rgba(25, 135, 84, 0.40);
+}
+
+.btn-approve:active {
+    background-color: rgba(25, 135, 84, 0.20);
+}
+
+.btn-reject {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.4rem;
+    min-height:       38px;
+    padding:          0 1.1rem;
+    font-family:      inherit;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            var(--accent-primary);
+    background-color: rgba(183, 32, 46, 0.05);
+    border:           1px solid rgba(183, 32, 46, 0.2);
+    border-radius:    8px;
+    cursor:           pointer;
+    outline:          none;
+    white-space:      nowrap;
+    width:            100%;
+    transition:       background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-reject:hover {
+    background-color: rgba(183, 32, 46, 0.10);
+    border-color:     rgba(183, 32, 46, 0.40);
+}
+
+.btn-reject:active {
+    background-color: rgba(183, 32, 46, 0.15);
+}
+
+
+/* =============================================================================
+   17b. MOBILE PDF FALLBACK PROMPT
+   Shown inside the modal when window.innerWidth < 768 and file is a PDF.
+   Centred column layout with a large call-to-action button.
+   ============================================================================= */
+
+.rq-mobile-pdf-prompt {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    justify-content:center;
+    gap:            1rem;
+    padding:        3rem 2rem;
+    text-align:     center;
+    flex:           1;
+}
+
+.rq-mobile-pdf-prompt__icon {
+    font-size:   3.5rem;
+    color:       var(--border-color);
+    line-height: 1;
+}
+
+.rq-mobile-pdf-prompt__msg {
+    font-size:  0.875rem;
+    color:      var(--text-secondary);
+    margin:     0;
+    max-width:  260px;
+    line-height:1.55;
+}
+
+.rq-mobile-pdf-prompt__btn {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.45rem;
+    background-color: var(--text-heading);
+    color:            #ffffff;
+    border:           none;
+    border-radius:    8px;
+    padding:          12px 24px;
+    font-family:      inherit;
+    font-size:        0.875rem;
+    font-weight:      600;
+    text-decoration:  none;
+    white-space:      nowrap;
+    /* No transform — mobile PDF button must not jump */
+    transition:       opacity 0.15s ease;
+}
+
+.rq-mobile-pdf-prompt__btn:hover {
+    opacity:         0.88;
+    color:           #ffffff;
+    text-decoration: none;
+}
+
+
+/* =============================================================================
+   18. PROOF LIGHTBOX MODAL
+   rq-modal-body: height:75vh + display:flex + flex-direction:column + padding:0
+   The injected iframe gets flex:1 + height:100% in JS, so it stretches to fill
+   the full 75vh without the page behind ever scrolling.
+   ============================================================================= */
+
+.rq-modal-content {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    16px;
+    overflow:         hidden;
+}
+
+.rq-modal-header {
+    display:          flex;
+    align-items:      flex-start;
+    justify-content:  space-between;
+    gap:              1rem;
+    padding:          1rem 1.25rem;
+    border-bottom:    1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-subtle) 60%, var(--bg-card));
+}
+
+.rq-modal-title {
+    font-size:   1rem;
+    font-weight: 700;
+    color:       var(--text-heading);
+    margin:      0 0 0.2rem;
+    display:     flex;
+    align-items: center;
+    gap:         0.45rem;
+}
+
+.rq-modal-title i { font-size: 0.95rem; }
+
+.rq-modal-subtitle {
+    font-size:   0.78rem;
+    color:       var(--text-secondary);
+    margin:      0;
+    line-height: 1.4;
+}
+
+.rq-modal-header-actions {
+    display:     flex;
+    align-items: center;
+    gap:         0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-open-tab {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    width:           32px;
+    height:          32px;
+    border-radius:   8px;
+    background:      transparent;
+    border:          1px solid var(--border-color);
+    color:           var(--text-secondary);
+    font-size:       0.75rem;
+    text-decoration: none;
+    transition:      color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn-open-tab:hover {
+    color:           var(--text-heading);
+    border-color:    var(--text-heading);
+    background:      color-mix(in srgb, var(--text-heading) 6%, var(--bg-card));
+    text-decoration: none;
+}
+
+.btn-modal-close {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    width:           32px;
+    height:          32px;
+    border-radius:   8px;
+    background:      transparent;
+    border:          1px solid var(--border-color);
+    color:           var(--text-secondary);
+    font-size:       0.72rem;
+    cursor:          pointer;
+    outline:         none;
+    transition:      color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn-modal-close:hover {
+    color:        var(--accent-primary);
+    border-color: var(--accent-primary);
+    background:   color-mix(in srgb, var(--accent-primary) 6%, var(--bg-card));
+}
+
+/* THE KEY RULE: 75vh flex column so the injected iframe fills it completely */
+.rq-modal-body {
+    height:         75vh;
+    padding:        0;
+    display:        flex;
+    flex-direction: column;
+    position:       relative;
+    overflow:       hidden;   /* Bootstrap's modal-dialog-scrollable handles scroll */
+}
+
+.rq-modal-loader {
+    position:        absolute;
+    inset:           0;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    background:      var(--bg-subtle);
+    z-index:         1;
+}
+
+.rq-spinner {
+    width:            36px;
+    height:           36px;
+    border:           3px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius:    50%;
+    animation:        rq-spin 0.7s linear infinite;
+}
+
+@keyframes rq-spin { to { transform: rotate(360deg); } }
+
+.rq-modal-no-file {
+    padding:    2.5rem 2rem;
+    text-align: center;
+    font-size:  0.875rem;
+    color:      var(--text-secondary);
+    margin:     0;
+}
+
+
+/* =============================================================================
+   19. EMPTY STATE
+   ============================================================================= */
+
+.rq-empty {
+    display:          flex;
+    flex-direction:   column;
+    align-items:      center;
+    text-align:       center;
+    padding:          5rem 2rem;
+    gap:              0.85rem;
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    16px;
+    max-width:        560px;
+    margin:           0 auto;
+}
+
+.rq-empty__icon {
+    font-size:     3rem;
+    color:         var(--border-color);
+    line-height:   1;
+    margin-bottom: 0.3rem;
+}
+
+.rq-empty__title {
+    font-size:      1.2rem;
+    font-weight:    800;
+    color:          var(--text-heading);
+    margin:         0;
+    letter-spacing: -0.02em;
+}
+
+.rq-empty__body {
+    font-size:   0.875rem;
+    color:       var(--text-secondary);
+    line-height: 1.65;
+    max-width:   380px;
+    margin:      0;
+}
+
+
+/* =============================================================================
+   20. DARK MODE REFINEMENTS
+   Most elements adapt automatically via CSS variables. These rules cover
+   the few cases where the base style.css dark-mode values need a nudge.
+   ============================================================================= */
+
+[data-theme="dark"] .zv-card__header {
+    background-color: color-mix(in srgb, var(--bg-subtle) 40%, var(--bg-card));
+}
+
+[data-theme="dark"] .zv-card__avatar {
+    background-color: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-card));
+    border-color:     color-mix(in srgb, var(--accent-primary) 28%, transparent);
+}
+
+[data-theme="dark"] .dept-badge {
+    background-color: color-mix(in srgb, var(--text-heading) 15%, var(--bg-card));
+    border-color:     color-mix(in srgb, var(--text-heading) 28%, transparent);
+}
+
+[data-theme="dark"] .btn-trigger--approve {
+    color:            #4caf82;
+    background-color: rgba(76, 175, 130, 0.10);
+    border-color:     rgba(76, 175, 130, 0.25);
+}
+[data-theme="dark"] .btn-trigger--approve:hover {
+    background-color: rgba(76, 175, 130, 0.16);
+    border-color:     rgba(76, 175, 130, 0.45);
+}
+
+[data-theme="dark"] .reject-textarea {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+    color:            var(--text-primary);
+}
+
+[data-theme="dark"] .reject-textarea:focus {
+    background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .quick-chip {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .btn-approve {
+    color:            #4caf82;
+    background-color: rgba(76, 175, 130, 0.10);
+    border-color:     rgba(76, 175, 130, 0.25);
+}
+[data-theme="dark"] .btn-approve:hover {
+    background-color: rgba(76, 175, 130, 0.16);
+    border-color:     rgba(76, 175, 130, 0.45);
+}
+
+[data-theme="dark"] .btn-reject {
+    color:            #ef5350;
+    background-color: rgba(239, 83, 80, 0.06);
+    border-color:     rgba(239, 83, 80, 0.22);
+}
+[data-theme="dark"] .btn-reject:hover {
+    background-color: rgba(239, 83, 80, 0.12);
+    border-color:     rgba(239, 83, 80, 0.40);
+}
+
+[data-theme="dark"] .rq-alert--success {
+    background:   rgba(76, 175, 130, 0.12);
+    border-color: rgba(76, 175, 130, 0.3);
+    color:        #4caf82;
+}
+[data-theme="dark"] .rq-alert--warning {
+    background:   rgba(240, 165, 0, 0.12);
+    border-color: rgba(240, 165, 0, 0.28);
+    color:        #f0c040;
+}
+
+[data-theme="dark"] .rq-modal-content {
+    background-color: var(--bg-card);
+    border-color:     var(--border-color);
+}
+[data-theme="dark"] .rq-modal-header {
+    background-color: color-mix(in srgb, var(--bg-subtle) 40%, var(--bg-card));
+}
+[data-theme="dark"] .rq-modal-loader { background: var(--bg-subtle); }
+
+[data-theme="dark"] .rq-empty {
+    background-color: var(--bg-card);
+    border-color:     var(--border-color);
+}
+
+
+/* =============================================================================
+   21. ACCESSIBILITY & PRINT
+   ============================================================================= */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline:        2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius:  4px;
+}
+
+/* Textarea manages its own focus ring via border + box-shadow */
+.reject-textarea:focus-visible { outline: none; }
+
+@media print {
+    .zv-card__actions,
+    #proofModal { display: none !important; }
+    .rq-wrapper { padding-bottom: 1rem; }
+    .zv-card {
+        box-shadow:   none !important;
+        break-inside: avoid;
+        border:       1px solid #ccc !important;
+    }
+}

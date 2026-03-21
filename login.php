@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$login_error) {
         try {
             $stmt = $pdo->prepare("
-                SELECT id, name, email, password_hash, role, is_active
+                SELECT id, name, email, password_hash, role, department, is_active
                 FROM   users
                 WHERE  email = :email
                 LIMIT  1
@@ -118,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name']  = $user['name'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['role']       = $user['role'];
+        $_SESSION['department'] = $user['department']; // Fix: required by review_queue.php dept filter
 
         if ($remember_me) {
             $cp = session_get_cookie_params();
