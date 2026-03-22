@@ -1,0 +1,613 @@
+/*
+ * =============================================================================
+ * THE ZENITH VIEW — /assets/css/add_user.css
+ * User Provisioning Page — Page-Specific Styles
+ *
+ * ARCHITECTURE:
+ *   admin_dashboard.css already defines: .adm-wrapper, .adm-card,
+ *   .adm-card__header, .adm-card__title, .adm-card__sub, .adm-header,
+ *   .adm-header__*, .adm-avatar, .adm-alert, .adm-alert--*.
+ *   This file ONLY adds what those files don't cover:
+ *     • .prov-form-body  — inner padding wrapper (never on .adm-card directly)
+ *     • .prov-field-group — vertical spacing between fields
+ *     • .prov-label / .prov-hint / .prov-required — form typography
+ *     • .prov-input / .prov-select — Bootstrap .form-control overrides
+ *     • .prov-email-wrap / .prov-email-input / .prov-email-addon — email group
+ *     • .prov-pill-wrap / .auto-score-pill — CGPA info tag
+ *     • .prov-actions — action row layout
+ *     • .btn-prov-cancel / .btn-prov-submit / .btn-prov-import — buttons
+ *     • .csv-hint-block / .csv-col-chip — column reference block
+ *
+ * RULES:
+ *   - Zero hardcoded hex values — only CSS variables from style.css.
+ *   - Use class+element selectors (e.g. input.prov-input) to beat Bootstrap
+ *     specificity without !important where possible.
+ *   - Dark mode handled by variable inheritance. Only explicit overrides where
+ *     Bootstrap hardcodes a value (e.g. white bg on form-select, caret colour).
+ * =============================================================================
+ */
+
+
+/* =============================================================================
+   INNER FORM BODY
+   .adm-card has overflow:hidden + display:flex flex-direction:column.
+   Padding must NEVER go on .adm-card itself — it must go on this inner wrapper.
+   This mirrors the pattern used in the pulse feed and dept matrix cards.
+   ============================================================================= */
+
+.prov-form-body {
+    padding: 0 1.4rem 1.5rem;
+}
+
+
+/* =============================================================================
+   FIELD GROUP SPACING
+   Consistent vertical rhythm between form fields.
+   Using margin-bottom rather than a gap so the d-none class on dept/year
+   collapses properly without leaving gap orphans.
+   ============================================================================= */
+
+.prov-field-group {
+    margin-bottom: 1.25rem;
+}
+
+.prov-field-group:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =============================================================================
+   FORM TYPOGRAPHY — labels, hints, required marker
+   Sizes match .adm-card__sub (0.78rem) rhythm from admin_dashboard.css.
+   ============================================================================= */
+
+.prov-label {
+    display:        block;
+    font-size:      0.78rem;
+    font-weight:    600;
+    color:          var(--text-secondary);
+    margin-bottom:  0.4rem;
+    letter-spacing: 0.01em;
+}
+
+.prov-required {
+    color:       var(--accent-primary);
+    margin-left: 0.1rem;
+}
+
+.prov-hint {
+    font-size:   0.72rem;
+    color:       var(--text-muted);
+    margin:      0.3rem 0 0;
+    line-height: 1.5;
+}
+
+
+/* =============================================================================
+   FORM CONTROLS — input & select
+   Using input.prov-input and select.prov-select selectors for higher specificity
+   than Bootstrap's .form-control / .form-select without needing !important.
+   ============================================================================= */
+
+input.prov-input,
+input[type="file"].prov-input {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    8px;
+    color:            var(--text-primary);
+    font-size:        0.875rem;
+    font-family:      var(--font-family);
+    padding:          0.5rem 0.8rem;
+    height:           auto;
+    box-shadow:       none;
+    transition:       border-color 0.18s ease, box-shadow 0.18s ease;
+    width:            100%;
+    display:          block;
+}
+
+select.prov-select {
+    background-color: var(--bg-card);
+    border:           1px solid var(--border-color);
+    border-radius:    8px;
+    color:            var(--text-primary);
+    font-size:        0.875rem;
+    font-family:      var(--font-family);
+    padding:          0.5rem 2.4rem 0.5rem 0.8rem;
+    height:           auto;
+    box-shadow:       none;
+    transition:       border-color 0.18s ease, box-shadow 0.18s ease;
+    width:            100%;
+    display:          block;
+    appearance:       none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2358595B' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat:   no-repeat;
+    background-position: right 0.75rem center;
+    background-size:     14px 10px;
+}
+
+input.prov-input::placeholder {
+    color:   var(--text-muted);
+    opacity: 1;
+}
+
+/* Hover — border darkens to signal interactivity before the user clicks.
+   Uses a mix of --border-color and --text-secondary so the shift is
+   proportional and theme-aware (works in both light and dark mode). */
+input.prov-input:hover,
+input[type="file"].prov-input:hover,
+select.prov-select:hover {
+    border-color: color-mix(in srgb, var(--border-color) 50%, var(--text-secondary));
+}
+
+/* Focus states — red ring matching project convention */
+input.prov-input:focus,
+input.prov-input:focus-visible,
+select.prov-select:focus,
+select.prov-select:focus-visible {
+    outline:      none;
+    border-color: var(--accent-primary);
+    box-shadow:   0 0 0 3px rgba(var(--accent-primary-rgb), 0.13);
+    background-color: var(--bg-card);
+    color:        var(--text-primary);
+}
+
+
+/* =============================================================================
+   EMAIL INPUT GROUP
+   Custom flex wrapper — avoids Bootstrap's .input-group which adds its own
+   border-radius rules that conflict with our overrides.
+   ============================================================================= */
+
+.prov-email-wrap {
+    display:     flex;
+    align-items: stretch;
+}
+
+/* Input inside email group — zero right radius to sit flush against addon */
+input.prov-email-input {
+    border-right:  0;
+    border-radius: 8px 0 0 8px;
+    flex:          1;
+    min-width:     0;
+}
+
+/* When focused, bring above the addon for clean ring rendering */
+input.prov-email-input:focus,
+input.prov-email-input:focus-visible {
+    position:     relative;
+    z-index:      2;
+    border-color: var(--accent-primary);
+    border-right: 0; /* keep flush */
+}
+
+/* Sync addon border when hovering anywhere over the email group */
+.prov-email-wrap:hover .prov-email-addon {
+    border-color: color-mix(in srgb, var(--border-color) 50%, var(--text-secondary));
+}
+
+/* Sync addon border colour when the sibling input is focused */
+.prov-email-wrap:focus-within .prov-email-addon {
+    border-color: var(--accent-primary);
+}
+
+/* @somaiya.edu chip — no left border for seamless join */
+.prov-email-addon {
+    display:          flex;
+    align-items:      center;
+    flex-shrink:      0;
+    background-color: var(--bg-subtle);
+    border:           1px solid var(--border-color);
+    border-left:      0;
+    border-radius:    0 8px 8px 0;
+    color:            var(--text-muted);
+    font-size:        0.82rem;
+    font-weight:      500;
+    padding:          0.5rem 0.85rem;
+    white-space:      nowrap;
+    user-select:      none;
+    transition:       border-color 0.18s ease;
+    line-height:      1;
+}
+
+
+/* =============================================================================
+   AUTO-SCORE PILL
+   Translucent accent-secondary tint. Fully-rounded pill. Static tag.
+   ============================================================================= */
+
+.prov-pill-wrap {
+    margin-top: 0.6rem;
+}
+
+.auto-score-pill {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.38rem;
+    padding:          0.28rem 0.8rem;
+    background-color: color-mix(in srgb, var(--accent-secondary) 10%, var(--bg-card));
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 22%, transparent);
+    border-radius:    50px;
+    font-size:        0.74rem;
+    font-weight:      600;
+    color:            var(--accent-secondary);
+    white-space:      nowrap;
+    user-select:      none;
+    line-height:      1;
+}
+
+.auto-score-pill i {
+    font-size:   0.68rem;
+    flex-shrink: 0;
+}
+
+
+/* =============================================================================
+   ACTION BUTTONS ROW
+   Right-aligned via justify-content: flex-end.
+   Top border + padding visually separates from the CGPA field above,
+   matching the separator rhythm used in .breakdown-item--total (dashboard.css).
+   ============================================================================= */
+
+.prov-actions {
+    display:         flex;
+    align-items:     center;
+    justify-content: flex-end;
+    gap:             0.75rem;
+    flex-wrap:       wrap;
+    padding-top:     1.1rem;
+    margin-top:      0.25rem;
+    border-top:      1px solid var(--border-color);
+}
+
+/* Cancel — ghost outline reset button.
+   Hover: border shifts to --accent-primary, subtle bg tint. No lift (reset
+   actions should feel lighter than submit actions). */
+button.btn-prov-cancel {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.35rem;
+    padding:          0.6rem 1.25rem;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            var(--text-secondary);
+    background-color: transparent;
+    border:           1.5px solid var(--border-color);
+    border-radius:    8px;
+    text-decoration:  none;
+    cursor:           pointer;
+    white-space:      nowrap;
+    min-height:       44px;
+    font-family:      var(--font-family);
+    transition:       border-color 0.2s ease,
+                      color 0.2s ease,
+                      background-color 0.2s ease;
+}
+
+button.btn-prov-cancel:hover,
+button.btn-prov-cancel:focus-visible {
+    border-color:     var(--accent-primary);
+    color:            var(--accent-primary);
+    background-color: rgba(var(--accent-primary-rgb), 0.05);
+}
+
+button.btn-prov-cancel:active {
+    background-color: rgba(var(--accent-primary-rgb), 0.09);
+}
+
+/* Provision User — solid primary.
+   Hover physics copied exactly from .btn-upload-hero in dashboard.css:
+   background-color: var(--accent-primary-hover)
+   transform: translateY(-1px)
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18)
+   transition: background-color 0.2s ease, border-color 0.2s ease,
+               transform 0.15s ease, box-shadow 0.2s ease */
+button.btn-prov-submit {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              0.4rem;
+    padding:          0.6rem 1.35rem;
+    font-size:        0.875rem;
+    font-weight:      600;
+    color:            #ffffff;
+    background-color: var(--accent-primary);
+    border:           1.5px solid var(--accent-primary);
+    border-radius:    8px;
+    cursor:           pointer;
+    white-space:      nowrap;
+    min-height:       44px;
+    font-family:      var(--font-family);
+    transition:       background-color 0.2s ease,
+                      border-color     0.2s ease,
+                      transform        0.15s ease,
+                      box-shadow       0.2s ease;
+}
+
+button.btn-prov-submit:hover,
+button.btn-prov-submit:focus-visible {
+    background-color: var(--accent-primary-hover);
+    border-color:     var(--accent-primary-hover);
+    color:            #ffffff;
+    transform:        translateY(-1px);
+    box-shadow:       0 4px 12px rgba(0, 0, 0, 0.18);
+    text-decoration:  none;
+}
+
+button.btn-prov-submit:active {
+    transform:  translateY(0);
+    box-shadow: none;
+}
+
+/* Import Roster — solid accent-secondary */
+button.btn-prov-import {
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.4rem;
+    padding:          0.52rem 1.25rem;
+    font-size:        0.82rem;
+    font-weight:      700;
+    color:            #ffffff;
+    background-color: var(--accent-secondary);
+    border:           1.5px solid var(--accent-secondary);
+    border-radius:    8px;
+    cursor:           pointer;
+    min-height:       40px;
+    transition:       background-color 0.18s ease, transform 0.15s ease;
+}
+
+button.btn-prov-import:hover,
+button.btn-prov-import:focus-visible {
+    background-color: var(--accent-secondary-hover);
+    border-color:     var(--accent-secondary-hover);
+    color:            #ffffff;
+    transform:        translateY(-1px);
+}
+
+button.btn-prov-import:active {
+    transform: translateY(0);
+}
+
+
+/* =============================================================================
+   CSV HINT BLOCK
+   "Required Columns" reference panel in the right card.
+   Matches the visual pattern of .best-practice from points.css.
+   ============================================================================= */
+
+.csv-hint-block {
+    background-color: var(--bg-subtle);
+    border:           1px solid var(--border-color);
+    border-radius:    8px;
+    padding:          0.85rem 1rem;
+    margin-bottom:    1.25rem;
+}
+
+.csv-hint-block__label {
+    display:        flex;
+    align-items:    center;
+    gap:            0.35rem;
+    font-size:      0.68rem;
+    font-weight:    700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color:          var(--text-secondary);
+    margin:         0 0 0.55rem;
+}
+
+.csv-hint-block__label i { font-size: 0.68rem; }
+
+.csv-hint-block__chips {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.35rem;
+    margin-bottom: 0.55rem;
+}
+
+.csv-col-chip {
+    font-family:      'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    font-size:        0.7rem;
+    font-weight:      600;
+    padding:          0.15rem 0.45rem;
+    border-radius:    4px;
+    background-color: color-mix(in srgb, var(--accent-secondary) 8%, var(--bg-card));
+    color:            var(--accent-secondary);
+    border:           1px solid color-mix(in srgb, var(--accent-secondary) 18%, transparent);
+    white-space:      nowrap;
+}
+
+.csv-hint-block__note {
+    font-size:   0.72rem;
+    color:       var(--text-muted);
+    line-height: 1.55;
+    margin:      0;
+}
+
+.csv-hint-block__note code {
+    font-size:        0.68rem;
+    background-color: color-mix(in srgb, var(--border-color) 30%, var(--bg-card));
+    border-radius:    3px;
+    padding:          0.1rem 0.3rem;
+    color:            var(--text-secondary);
+}
+
+
+/* =============================================================================
+   BREADCRUMB
+   .guide-breadcrumb, .guide-breadcrumb__link, .guide-breadcrumb__sep,
+   .guide-breadcrumb__current are already defined in points.css.
+   add_user.css loads AFTER points.css is NOT loaded on admin pages, so we
+   redeclare the minimum needed subset here so the breadcrumb works without
+   requiring points.css as a dependency.
+   ============================================================================= */
+
+.guide-breadcrumb {
+    display:       flex;
+    align-items:   center;
+    gap:           0.5rem;
+    font-size:     0.82rem;
+    margin-bottom: 0.75rem;
+}
+
+.guide-breadcrumb__link {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             0.3rem;
+    color:           var(--text-secondary);
+    text-decoration: none;
+    font-weight:     500;
+    transition:      color 0.2s ease;
+}
+
+.guide-breadcrumb__link:hover  { color: var(--accent-primary); text-decoration: none; }
+.guide-breadcrumb__link i      { font-size: 0.72rem; }
+.guide-breadcrumb__sep         { color: var(--border-color); font-size: 0.75rem; }
+.guide-breadcrumb__current     { color: var(--accent-primary); font-weight: 600; }
+
+
+/* =============================================================================
+   EMAIL TOGGLE SWITCH
+   Uses Bootstrap's .form-switch as a base. We override the track and thumb
+   colours to use project variables so it responds to dark mode correctly.
+   The label stacks the primary text + a smaller hint line below it.
+   ============================================================================= */
+
+.prov-toggle-group {
+    padding:       0.85rem 1rem;
+    background:    var(--bg-subtle);
+    border:        1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.prov-switch {
+    display:     flex;
+    align-items: flex-start;
+    gap:         0.6rem;
+    padding:     0;
+    margin:      0;
+    cursor:      pointer;
+}
+
+/* Override Bootstrap's default thumb size and track colour */
+.prov-switch__input {
+    flex-shrink:  0;
+    width:        2.5em;
+    height:       1.4em;
+    margin-top:   0.15em;
+    cursor:       pointer;
+    background-color: var(--border-color);
+    border:       none;
+    box-shadow:   none;
+    transition:   background-color 0.2s ease;
+}
+
+/* Checked state — track fills to accent-secondary (Deep Trust Blue) */
+.prov-switch__input:checked {
+    background-color: var(--accent-secondary);
+    border-color:     var(--accent-secondary);
+}
+
+.prov-switch__input:focus,
+.prov-switch__input:focus-visible {
+    box-shadow: 0 0 0 3px rgba(var(--accent-secondary-rgb), 0.2);
+    outline:    none;
+}
+
+.prov-switch__label {
+    display:    flex;
+    flex-direction: column;
+    gap:        0.15rem;
+    cursor:     pointer;
+    user-select:none;
+}
+
+.prov-switch__text {
+    font-size:   0.875rem;
+    font-weight: 600;
+    color:       var(--text-primary);
+    line-height: 1.3;
+}
+
+.prov-switch__hint {
+    font-size:   0.72rem;
+    color:       var(--text-muted);
+    line-height: 1.4;
+}
+
+
+
+/* =============================================================================
+   DARK MODE REFINEMENTS
+   Variables cover most cases. These patches fix Bootstrap's hardcoded whites.
+   ============================================================================= */
+
+[data-theme="dark"] input.prov-input,
+[data-theme="dark"] input[type="file"].prov-input {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+    color:            var(--text-primary);
+}
+
+[data-theme="dark"] select.prov-select {
+    background-color: var(--bg-subtle);
+    border-color:     var(--border-color);
+    color:            var(--text-primary);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ADB5BD' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+[data-theme="dark"] input.prov-input:focus,
+[data-theme="dark"] select.prov-select:focus {
+    background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .prov-email-addon {
+    background-color: var(--bg-main);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .auto-score-pill {
+    background-color: color-mix(in srgb, var(--accent-secondary) 15%, var(--bg-card));
+    color:            #72C0DC;
+    border-color:     color-mix(in srgb, var(--accent-secondary) 28%, transparent);
+}
+
+[data-theme="dark"] .csv-hint-block {
+    background-color: var(--bg-main);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .csv-col-chip {
+    background-color: color-mix(in srgb, var(--accent-secondary) 14%, var(--bg-card));
+    border-color:     color-mix(in srgb, var(--accent-secondary) 28%, transparent);
+    color:            #72C0DC;
+}
+
+[data-theme="dark"] .prov-toggle-group {
+    background-color: var(--bg-main);
+    border-color:     var(--border-color);
+}
+
+[data-theme="dark"] .prov-switch__input {
+    background-color: var(--border-color);
+}
+
+[data-theme="dark"] .prov-switch__input:checked {
+    background-color: color-mix(in srgb, var(--accent-secondary) 70%, #72C0DC);
+}
+
+[data-theme="dark"] .guide-breadcrumb__sep {
+    color: var(--border-color);
+}
+
+
+/* =============================================================================
+   ACCESSIBILITY
+   Button focus rings use the existing :focus-visible rules defined on each
+   button above. Input/select focus rings are handled by the box-shadow in the
+   :focus block in the FORM CONTROLS section. No redundant outline needed here.
+   ============================================================================= */
+
+@media print {
+    .col-12.col-lg-4 { display: none !important; }
+    .prov-actions    { display: none !important; }
+}

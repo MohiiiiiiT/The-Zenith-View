@@ -416,7 +416,7 @@ function relative_time(string $datetime): string {
 
                 <div class="bento-actions" role="list" aria-label="Admin quick action buttons">
 
-                    <a href="<?= $base ?>/admin/manage_users.php?action=new"
+                    <a href="<?= $base ?>/admin/add_user.php?action=new"
                        class="bento-action" role="listitem"
                        aria-label="Add a new user">
                         <div class="bento-action__icon bento-action__icon--green" aria-hidden="true">
